@@ -4,7 +4,7 @@ export default function Index() {
   return (
     <div className="container">
       <h1 className="title">
-        Blog <br />
+        Testing PRs<br />
         <span>Kitchen Sink</span>
       </h1>
       <CounterButton />
