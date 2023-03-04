@@ -3,13 +3,12 @@ import { Outlet, useTransition } from '@remix-run/react';
 import { DataFunctionArgs, LoaderFunction, redirect } from '@remix-run/server-runtime';
 import { z } from 'zod';
 import { CONFIG } from '~/config.server';
-import { ROUTES } from '~/routes';
+import { ROUTES, ROUTE_DEFS } from '~/routes';
 import { AuthClient, requireOnboarded } from '~api/auth';
-import { requireParameters } from '~api/policy.server';
+import { requireWorkspaceId } from '~api/policy.server';
 import { WorkspaceClient } from '~api/workspace/api';
 import { Sidebar, Topbar } from '~components';
-import AccountModal from '~components/modal/account';
-import { useLoaderDataStrict } from '~hooks';
+import { makeRouteData, useLoaderDataStrict } from '~hooks';
 
 const loaderSchema = z.object({
   avatar: z.string(),
@@ -18,7 +17,8 @@ const loaderSchema = z.object({
   version: z.string(),
   sha: z.string(),
   workspaceId: z.string(),
-  workspaces: z.array(z.object({ id: z.string(), name: z.string() }))
+  workspaces: z.array(z.object({ id: z.string(), name: z.string() })),
+  currencies: z.array(z.object({ id: z.string(), name: z.string(), precision: z.number() }))
 });
 
 export const loader = async (args: DataFunctionArgs): Promise<z.infer<typeof loaderSchema>> => {
@@ -26,10 +26,11 @@ export const loader = async (args: DataFunctionArgs): Promise<z.infer<typeof loa
   const authClient = new AuthClient(args);
   const wsClient = new WorkspaceClient(args);
   const user = await authClient.getUser(userId);
-  const { workspaceId } = requireParameters(args.params, z.object({ workspaceId: z.string() }));
+  const workspaceId = requireWorkspaceId(args.params);
 
   const wsInfo = await wsClient.getWorkspaceInfo(workspaceId);
   const workspaces = await wsClient.getAllWorkspaces();
+  const currencies = await wsClient.getCurrencies();
 
   if (wsInfo === null) throw redirect(ROUTES.home);
 
@@ -40,9 +41,12 @@ export const loader = async (args: DataFunctionArgs): Promise<z.infer<typeof loa
     version: CONFIG.version,
     sha: CONFIG.sha,
     workspaceId,
-    workspaces
+    workspaces,
+    currencies
   };
 };
+
+export const workspaceRouteData = makeRouteData(ROUTE_DEFS.workspace, loaderSchema);
 
 export default function LedgerLayout() {
   const transition = useTransition();
@@ -52,7 +56,7 @@ export default function LedgerLayout() {
     <>
       <div className="flex h-screen w-screen items-stretch">
         <Sidebar workspaceId={workspaceId} className="flex-none" version={version} />
-        <div className="flex flex-1 transition-colors flex-col items-stretch bg-stone-200 dark:bg-stone-900 dark:text-white">
+        <div className="flex flex-1 flex-col items-stretch bg-stone-200 transition-colors dark:bg-stone-900 dark:text-white">
           <Topbar user={user} mode={mode} className="flex-none shadow" workspaces={workspaces} />
           {/* <BreadcrumsBar breadcrumbs={bc} className="" /> */}
           <div className="relative flex-1 overflow-y-auto">

@@ -1,47 +1,56 @@
+import { DataFunctionArgs } from '@remix-run/server-runtime';
+import { z } from 'zod';
+import { requireParameters, requireWorkspaceId } from '~api/policy.server';
+import { WorkspaceClient } from '~api/workspace/api';
 import { Button, PageHeader } from '~components';
 import AccountList from '~components/account/account-list';
-import { useModal } from '~hooks';
+import { useLoaderDataStrict, useModal, useRouteData } from '~hooks';
+import { workspaceRouteData } from '../ws.$workspaceId';
+
+const loaderSchema = z.object({
+  accounts: z.array(z.object({
+    id: z.number(),
+    name: z.string(),
+    currency_id: z.string(),
+    type: z.string().nullable(),
+  }))
+})
+
+export const loader = async (args: DataFunctionArgs): Promise<z.infer<typeof loaderSchema>> => {
+  const wsClient = new WorkspaceClient(args);
+  const workspaceId = requireWorkspaceId(args.params);
+  const accounts = await wsClient.getAccountBalances(workspaceId);
+
+  return {
+    accounts
+  }
+}
 
 export default function Accounts() {
+  const { currencies } = useRouteData(workspaceRouteData);
+  const { accounts } = useLoaderDataStrict(loaderSchema);
   const { newAccount } = useModal();
-  const accounts = [
-    {
-      accountId: '123',
-      name: 'NAB Transaction',
-      type: 'Cash Account',
-      denomination: 'AUD',
-      balance: 33523.53,
-      flow: 142.2
-    },
-    {
-      accountId: '123',
-      name: 'NAB CC',
-      type: 'Credit Card',
-      denomination: 'AUD',
-      balance: -322.5,
-      flow: -22.24
-    },
-    {
-      accountId: '123',
-      name: 'Stake ',
-      type: 'Settlement Account',
-      denomination: 'USD',
-      balance: 12004.13,
-      flow: 0
-    }
-  ];
+  const fakeAccounts = accounts.map(a => ({
+    accountId: a.id,
+    name: a.name,
+    type: a.type ?? '',
+    denomination: a.currency_id,
+    balance: 0,
+    flow: 0
+  }));
+
   const handleCreateAccount = () => {
-    newAccount();
+    newAccount(currencies);
   };
   return (
-    <div className="self-stretch bg-white dark:bg-stone-800 w-full">
-      <nav className="px-4 py-6 flex justify-between items-center">
+    <div className="w-full self-stretch bg-white dark:bg-stone-800">
+      <nav className="flex items-center justify-between px-4 py-6">
         <PageHeader>Accounts</PageHeader>
         <Button onClick={handleCreateAccount}>New Account</Button>
       </nav>
       <div className="w-full overflow-x-auto">
         <div className="overflow-hidden shadow">
-          <AccountList accounts={accounts} />
+          <AccountList accounts={fakeAccounts} />
         </div>
       </div>
     </div>

@@ -9,15 +9,15 @@ import { InputCheck } from '~components/form';
 
 type Props = {
   accounts: Array<{
-    accountId: string;
+    accountId: number;
     name: string;
     type: string;
     denomination: string;
     balance: number;
     flow: number;
   }>;
-  onViewTransactions?: (accountId: string) => void;
-  onEditAccount?: (accountId: string) => void;
+  onViewTransactions?: (accountId: number) => void;
+  onEditAccount?: (accountId: number) => void;
 };
 
 export default function AccountList({ accounts, onViewTransactions, onEditAccount }: Props) {

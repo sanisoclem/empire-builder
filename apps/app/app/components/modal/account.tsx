@@ -1,20 +1,28 @@
 import { Dialog, Transition } from '@headlessui/react';
+import { useFetcher } from '@remix-run/react';
 import { useAtom } from 'jotai';
 import { Fragment } from 'react';
-import { Input, InputCombo, Textarea } from '~components';
-import { accountModalAtom } from '~hooks';
+import { Controller, useForm, useWatch } from 'react-hook-form';
+import { ROUTES } from '~/routes';
+import { Button, Input, InputCombo, Textarea } from '~components';
+import { accountModalAtom, useParamWorkspaceId } from '~hooks';
 
 export default function AccountModal() {
+  const { workspaceId } = useParamWorkspaceId();
   const [state, setState] = useAtom(accountModalAtom);
+  const fetcher = useFetcher();
+  const { register, control } = useForm();
+  const currencyObj = useWatch({ name: 'currencyObj', control });
 
-  function closeModal() {
+  function handleSave() {}
+  function handleCancel() {
     setState((f) => ({ ...f, open: false }));
   }
 
   return (
     <>
       <Transition appear show={state.open} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={closeModal}>
+        <Dialog as="div" className="relative z-10" onClose={handleCancel}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -27,7 +35,11 @@ export default function AccountModal() {
             <div className="fixed inset-0 bg-black bg-opacity-25" />
           </Transition.Child>
 
-          <div className="fixed inset-0 overflow-y-auto">
+          <fetcher.Form
+            className="fixed inset-0 overflow-y-auto"
+            action={ROUTES.workspace(workspaceId).createAccount}
+            method="post"
+          >
             <div className="flex min-h-full items-center justify-center p-4 text-center">
               <Transition.Child
                 as={Fragment}
@@ -38,38 +50,45 @@ export default function AccountModal() {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 space-y-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-md transform space-y-6 overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                     New Account
                   </Dialog.Title>
-                  <div className="">
-                    <p className="text-sm text-gray-500">
-                      Your payment has been successfully submitted. We’ve sent you an email with all
-                      of the details of your order.
-                    </p>
+                  <div className="space-y-6">
+                    <input type="hidden" name="workspaceId" value={workspaceId} />
+                    <input type="hidden" name="currencyId" value={currencyObj?.id} />
                     <Input label="Account name" type="text" name="name" />
+                    <Input label="Account Type" type="text" name="accountType" />
                     <Textarea label="Notes" placeholder="account notes" rows={4} name="notes" />
-                    <InputCombo
-                      label="Denomination"
-                      choices={[]}
-                      placeholder="denomination"
-                      name="denominationObj"
+                    <Controller
+                      name="currencyObj"
+                      control={control}
+                      render={({ field }) => (
+                        <InputCombo
+                          label="Denomination"
+                          choices={state.currencies.map((c) => ({
+                            id: c.id,
+                            name: `${c.name} (${c.id})`
+                          }))}
+                          placeholder="denomination"
+                          {...field}
+                        />
+                      )}
                     />
                   </div>
 
-                  <div className="">
-                    <button
-                      type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-900 hover:bg-indigo-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
-                      onClick={closeModal}
-                    >
-                      Got it, thanks!
-                    </button>
+                  <div className="flex gap-2 justify-end">
+                    <Button type="button" variant="neutral" onClick={handleCancel}>
+                      Cancel
+                    </Button>
+                    <Button type="submit" onClick={handleSave} isLoading={fetcher.state !== 'idle'}>
+                      Add new account
+                    </Button>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
             </div>
-          </div>
+          </fetcher.Form>
         </Dialog>
       </Transition>
     </>

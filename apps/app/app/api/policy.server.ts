@@ -1,5 +1,8 @@
 import type { Params } from '@remix-run/react';
-import type { z } from 'zod';
+import { z } from 'zod';
+
+export const requireWorkspaceId = (params: Params) =>
+  requireParameters(params, z.object({ workspaceId: z.string() })).workspaceId;
 
 export const requireParameters = <T extends z.ZodTypeAny>(
   params: Params,
