@@ -17,7 +17,7 @@ const customClaims = z.union([
 ]);
 
 export const getAuth = async (args: DataFunctionArgs) => {
-  const v = await clerkGetAuth(args as any, {});
+  const v = await clerkGetAuth(args);
   if (!v.userId) throw redirect(ROUTES.signin);
   const decoded = customClaims.parse(v.sessionClaims);
 

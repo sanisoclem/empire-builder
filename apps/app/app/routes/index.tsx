@@ -10,3 +10,8 @@ export const loader: LoaderFunction = async (args) => {
 
   return redirect(ROUTES.workspace(customClaims.workspaces[0]!).dashboard);
 };
+
+
+export default function () {
+  return <div>Redirecting...</div>
+}
