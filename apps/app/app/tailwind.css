@@ -2,14 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-.sidebar .sidebar-menu-label {
-  @apply hidden;
-}
-.sidebar[data-state='expanded'] .sidebar-menu-label {
-  @apply inline;
-}
-.sidebar-menu-icon {
-  @apply h-6 w-auto;
+html {
+	line-height: 1.5;
+	-webkit-text-size-adjust: 100%;
+	-moz-tab-size: 4;
+	tab-size: 4;
+	font-family: Yaldevi, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
+	font-feature-settings: normal;
 }
 
 .btn {
