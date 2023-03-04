@@ -8,13 +8,15 @@ import { useLoaderDataStrict, useModal, useRouteData } from '~hooks';
 import { workspaceRouteData } from '../ws.$workspaceId';
 
 const loaderSchema = z.object({
-  accounts: z.array(z.object({
-    id: z.number(),
-    name: z.string(),
-    currency_id: z.string(),
-    type: z.string().nullable(),
-  }))
-})
+  accounts: z.array(
+    z.object({
+      id: z.number(),
+      name: z.string(),
+      currency_id: z.string(),
+      type: z.string().nullable()
+    })
+  )
+});
 
 export const loader = async (args: DataFunctionArgs): Promise<z.infer<typeof loaderSchema>> => {
   const wsClient = new WorkspaceClient(args);
@@ -23,14 +25,14 @@ export const loader = async (args: DataFunctionArgs): Promise<z.infer<typeof loa
 
   return {
     accounts
-  }
-}
+  };
+};
 
 export default function Accounts() {
-  const { currencies } = useRouteData(workspaceRouteData);
+  const { currencies, workspaceId } = useRouteData(workspaceRouteData);
   const { accounts } = useLoaderDataStrict(loaderSchema);
   const { newAccount } = useModal();
-  const fakeAccounts = accounts.map(a => ({
+  const fakeAccounts = accounts.map((a) => ({
     accountId: a.id,
     name: a.name,
     type: a.type ?? '',
@@ -40,7 +42,7 @@ export default function Accounts() {
   }));
 
   const handleCreateAccount = () => {
-    newAccount(currencies);
+    newAccount(currencies, workspaceId);
   };
   return (
     <div className="w-full self-stretch bg-white dark:bg-stone-800">

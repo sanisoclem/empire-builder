@@ -5,10 +5,9 @@ import { Fragment } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { ROUTES } from '~/routes';
 import { Button, Input, InputCombo, Textarea } from '~components';
-import { accountModalAtom, useParamWorkspaceId } from '~hooks';
+import { accountModalAtom } from '~hooks';
 
 export default function AccountModal() {
-  const { workspaceId } = useParamWorkspaceId();
   const [state, setState] = useAtom(accountModalAtom);
   const fetcher = useFetcher();
   const { register, control } = useForm();
@@ -37,7 +36,7 @@ export default function AccountModal() {
 
           <fetcher.Form
             className="fixed inset-0 overflow-y-auto"
-            action={ROUTES.workspace(workspaceId).createAccount}
+            action={ROUTES.workspace(state.workspaceId).createAccount}
             method="post"
           >
             <div className="flex min-h-full items-center justify-center p-4 text-center">
@@ -55,7 +54,7 @@ export default function AccountModal() {
                     New Account
                   </Dialog.Title>
                   <div className="space-y-6">
-                    <input type="hidden" name="workspaceId" value={workspaceId} />
+                    <input type="hidden" name="workspaceId" value={state.workspaceId} />
                     <input type="hidden" name="currencyId" value={currencyObj?.id} />
                     <Input label="Account name" type="text" name="name" />
                     <Input label="Account Type" type="text" name="accountType" />
@@ -77,7 +76,7 @@ export default function AccountModal() {
                     />
                   </div>
 
-                  <div className="flex gap-2 justify-end">
+                  <div className="flex justify-end gap-2">
                     <Button type="button" variant="neutral" onClick={handleCancel}>
                       Cancel
                     </Button>
