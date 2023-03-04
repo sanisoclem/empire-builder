@@ -10,6 +10,7 @@ export const loader: LoaderFunction = async (args) => {
     return users;
   } catch (ex) {
     console.log(ex);
+    throw ex;
   } finally {
     client.$disconnect();
   }
