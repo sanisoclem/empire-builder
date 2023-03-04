@@ -20,7 +20,7 @@ export default function Index() {
   const loaderData = useLoaderData();
   return (
     <div className="container stuff">
-      {JSON.stringify(loaderData)}
+      test:{JSON.stringify(loaderData)}
       <h1 className="title">
         Blog <br />
         <span>Kitchen Sink</span>
