@@ -1,3 +1,41 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.sidebar .sidebar-menu-label {
+  @apply hidden;
+}
+.sidebar[data-state='expanded'] .sidebar-menu-label {
+  @apply inline;
+}
+.sidebar-menu-icon {
+  @apply h-6 w-auto;
+}
+
+.btn {
+  @apply relative inline-flex items-center justify-center rounded ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2;
+  @apply border border-solid;
+  @apply min-w-fit py-2 px-4 text-sm font-medium;
+  @apply disabled:bg-opacity-30 disabled:hover:bg-opacity-30;
+}
+
+.btn-primary {
+  @apply border-sky-600 bg-sky-600 text-white hover:bg-sky-700 focus:ring-sky-500;
+}
+
+.btn-neutral {
+  @apply border-stone-900 bg-white text-stone-900 hover:bg-stone-100 focus:ring-stone-500;
+}
+
+.btn-danger {
+  @apply border-red-600 bg-red-600 text-white hover:bg-red-700 focus:ring-red-400;
+}
+
+.menu-item {
+  @apply flex w-full items-center rounded-sm px-2 py-2 text-sm text-stone-900;
+  @apply data-[headlessui-state=active]:bg-indigo-500 data-[headlessui-state=active]:text-white;
+}
+
+.menu-items {
+  @apply w-56 divide-y divide-stone-100 rounded-sm bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none;
+}

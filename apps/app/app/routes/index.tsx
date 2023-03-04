@@ -1,32 +1,12 @@
-import { LoaderFunction } from "@remix-run/server-runtime";
-import { Button } from "ui";
-import { PrismaClient } from "db-totality";
-import { useLoaderData } from "@remix-run/react";
+import { LoaderFunction, redirect } from "@remix-run/server-runtime";
+import { ROUTES } from "~/routes";
+import { requireOnboarded } from "~api/auth";
 
 export const loader: LoaderFunction = async (args) => {
-  const client = new PrismaClient();
-  try {
-    const users = await client.user.findMany();
-    return users;
-  } catch (ex) {
-    console.log(ex);
-    throw ex;
-  } finally {
-    client.$disconnect();
-  }
-};
+  const { customClaims } = await requireOnboarded(args);
 
-export default function Index() {
-  const loaderData = useLoaderData();
-  return (
-    <div className="container stuff">
-      test:{JSON.stringify(loaderData)}
-      <h1 className="title">
-        Blog <br />
-        <span>Kitchen Sink</span>
-      </h1>
-      <Button />
-      <p className="description">Built With </p>
-    </div>
-  );
-}
+  if (customClaims.workspaces.length === 0)
+    throw redirect(ROUTES.createWorkspace);
+
+  return redirect(ROUTES.workspace(customClaims.workspaces[0]!).dashboard);
+};
