@@ -25,6 +25,7 @@ importers:
       '@types/react-dom': ^18.0.11
       '@vercel/analytics': ^0.1.10
       '@vercel/remix-entry-server': ^0.1.0
+      db-totality: workspace:*
       eslint: ^8.28.0
       react: ^18.2.0
       react-dom: ^18.2.0
@@ -32,6 +33,7 @@ importers:
       tsconfig: workspace:*
       typescript: ^4.9.3
       ui: workspace:*
+      zod: ^3.20.6
     dependencies:
       '@remix-run/node': 1.14.0
       '@remix-run/react': 1.14.0_biqbaboplfbrettd7655fr4n2y
@@ -39,9 +41,11 @@ importers:
       '@remix-run/server-runtime': 1.14.0
       '@vercel/analytics': 0.1.10_react@18.2.0
       '@vercel/remix-entry-server': 0.1.0_react@18.2.0
+      db-totality: link:../../packages/db-totality
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       ui: link:../../packages/ui
+      zod: 3.20.6
     devDependencies:
       '@remix-run/dev': 1.14.0_@remix-run+serve@1.14.0
       '@types/react': 18.0.28
@@ -70,7 +74,7 @@ importers:
     dependencies:
       '@astrojs/mdx': 0.17.2_astro@2.0.17+rollup@3.18.0
       '@astrojs/prefetch': 0.1.2
-      '@astrojs/react': 2.0.2_3xleytyzprlgycb2ded54tx72i
+      '@astrojs/react': 2.0.2_zjo4cq6ktgawfve4pawvezghma
       '@astrojs/rss': 2.1.1
       '@astrojs/tailwind': 3.0.1_o7rlocdsudmdrstqcqbafrcodq
       '@astrojs/vercel': 3.1.4_astro@2.0.17+react@18.2.0
@@ -99,7 +103,7 @@ importers:
       ui: workspace:*
     dependencies:
       '@astrojs/prefetch': 0.1.2
-      '@astrojs/react': 2.0.2_3xleytyzprlgycb2ded54tx72i
+      '@astrojs/react': 2.0.2_zjo4cq6ktgawfve4pawvezghma
       '@astrojs/tailwind': 3.0.1_o7rlocdsudmdrstqcqbafrcodq
       '@astrojs/vercel': 3.1.4_astro@2.0.17+react@18.2.0
       astro: 2.0.17
@@ -203,6 +207,21 @@ importers:
       tsconfig: link:../../packages/tsconfig
       typescript: 4.9.3
       vite: 3.2.4
+
+  packages/db-totality:
+    specifiers:
+      '@prisma/client': ^4.11.0
+      prisma: ^4.11.0
+      tsconfig: workspace:*
+      tsup: ^6.2.3
+      typescript: ^4.8.3
+    dependencies:
+      '@prisma/client': 4.11.0_prisma@4.11.0
+    devDependencies:
+      prisma: 4.11.0
+      tsconfig: link:../tsconfig
+      tsup: 6.5.0_typescript@4.9.3
+      typescript: 4.9.3
 
   packages/eslint-config-custom:
     specifiers:
@@ -360,7 +379,7 @@ packages:
       prismjs: 1.29.0
     dev: false
 
-  /@astrojs/react/2.0.2_3xleytyzprlgycb2ded54tx72i:
+  /@astrojs/react/2.0.2_zjo4cq6ktgawfve4pawvezghma:
     resolution: {integrity: sha512-UmQNvzJul5M/Q9aZJXnqz4z0ODZXkLuaNvgsYoKB7OdM8c2v85FsTjMZZJ7BvFo4On31jJ0rL/gwTaCeuYqmpw==}
     engines: {node: '>=16.12.0'}
     peerDependencies:
@@ -371,8 +390,8 @@ packages:
     dependencies:
       '@babel/core': 7.21.0
       '@babel/plugin-transform-react-jsx': 7.19.0_@babel+core@7.21.0
-      '@types/react': 18.0.28
-      '@types/react-dom': 18.0.11
+      '@types/react': 17.0.52
+      '@types/react-dom': 17.0.18
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     transitivePeerDependencies:
@@ -2438,6 +2457,28 @@ packages:
       tslib: 2.4.1
     dev: false
 
+  /@prisma/client/4.11.0_prisma@4.11.0:
+    resolution: {integrity: sha512-0INHYkQIqgAjrt7NzhYpeDQi8x3Nvylc2uDngKyFDDj1tTRQ4uV1HnVmd1sQEraeVAN63SOK0dgCKQHlvjL0KA==}
+    engines: {node: '>=14.17'}
+    requiresBuild: true
+    peerDependencies:
+      prisma: '*'
+    peerDependenciesMeta:
+      prisma:
+        optional: true
+    dependencies:
+      '@prisma/engines-version': 4.11.0-57.8fde8fef4033376662cad983758335009d522acb
+      prisma: 4.11.0
+    dev: false
+
+  /@prisma/engines-version/4.11.0-57.8fde8fef4033376662cad983758335009d522acb:
+    resolution: {integrity: sha512-3Vd8Qq06d5xD8Ch5WauWcUUrsVPdMC6Ge8ILji8RFfyhUpqon6qSyGM0apvr1O8n8qH8cKkEFqRPsYjuz5r83g==}
+    dev: false
+
+  /@prisma/engines/4.11.0:
+    resolution: {integrity: sha512-0AEBi2HXGV02cf6ASsBPhfsVIbVSDC9nbQed4iiY5eHttW9ZtMxHThuKZE1pnESbr8HRdgmFSa/Kn4OSNYuibg==}
+    requiresBuild: true
+
   /@proload/core/0.3.3:
     resolution: {integrity: sha512-7dAFWsIK84C90AMl24+N/ProHKm4iw0akcnoKjRvbfHifJZBLhaDsDus1QJmhG12lXj4e/uB/8mB/0aduCW+NQ==}
     dependencies:
@@ -2898,12 +2939,12 @@ packages:
     resolution: {integrity: sha512-rLVtIfbwyur2iFKykP2w0pl/1unw26b5td16d5xMgp7/yjTHomkyxPYChFoCr/FtEX1lN9wY6lFj1qvKdS5kDw==}
     dependencies:
       '@types/react': 17.0.52
-    dev: true
 
   /@types/react-dom/18.0.11:
     resolution: {integrity: sha512-O38bPbI2CWtgw/OoQoY+BRelw7uysmXbWvw3nLWO21H1HSh+GOlqPuXshJfjmpNlKiiSDG9cc1JZAaMmVdcTlw==}
     dependencies:
       '@types/react': 17.0.52
+    dev: true
 
   /@types/react/17.0.52:
     resolution: {integrity: sha512-vwk8QqVODi0VaZZpDXQCmEmiOuyjEFPY7Ttaw5vjM112LOq37yz1CDJGrRJwA1fYEq4Iitd5rnjd1yWAc/bT+A==}
@@ -8277,6 +8318,14 @@ packages:
     dependencies:
       parse-ms: 2.1.0
     dev: true
+
+  /prisma/4.11.0:
+    resolution: {integrity: sha512-4zZmBXssPUEiX+GeL0MUq/Yyie4ltiKmGu7jCJFnYMamNrrulTBc+D+QwAQSJ01tyzeGHlD13kOnqPwRipnlNw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      '@prisma/engines': 4.11.0
 
   /prismjs/1.29.0:
     resolution: {integrity: sha512-Kx/1w86q/epKcmte75LNrEoT+lX8pBpavuAbvJWRXar7Hz8jrtF+e3vY751p0R8H9HdArwaCTNDDzHg/ScJK1Q==}
