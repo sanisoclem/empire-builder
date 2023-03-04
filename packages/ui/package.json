@@ -25,7 +25,6 @@
     "tailwind-config": "workspace:*",
     "react": "^18.2.0",
     "tsconfig": "workspace:*",
-    "tsup": "^6.2.3",
-    "typescript": "^4.8.3"
+    "tsup": "^6.2.3"
   }
 }

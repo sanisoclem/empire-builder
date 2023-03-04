@@ -12,6 +12,11 @@
     "allowJs": true,
     "baseUrl": ".",
     "paths": {
+      "~api/*": ["./app/api/*"],
+      "~hooks": ["./app/hooks"],
+      "~model": ["./app/model"],
+      "~components": ["./app/components"],
+      "~components/*": ["./app/components/*"],
       "~/*": ["./app/*"]
     },
     "noEmit": true,

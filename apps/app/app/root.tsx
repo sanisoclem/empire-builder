@@ -1,4 +1,7 @@
-import type { MetaFunction, LinksFunction } from "@remix-run/node";
+import type {
+  MetaFunction,
+  LoaderFunction,
+} from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -7,26 +10,51 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import { ClerkApp, ClerkCatchBoundary } from "@clerk/remix";
+import { rootAuthLoader } from "@clerk/remix/ssr.server";
 import styles from "~/tailwind.css";
 import { Analytics } from "@vercel/analytics/react";
+import { useTheme } from "~hooks";
+import { Modals } from "~components";
+
+export const loader: LoaderFunction = (args) => {
+  return rootAuthLoader(args);
+};
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "Blog | Kitchen Sink",
+  title: "Empire Builder",
   viewport: "width=device-width,initial-scale=1",
 });
 
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
+export const CatchBoundary = ClerkCatchBoundary();
 
-export default function App() {
+export function links() {
+  return [{ rel: "stylesheet", href: styles }];
+}
+
+function App() {
+  const { theme } = useTheme();
   return (
-    <html lang="en">
+    <html lang="en" className={`h-full ${theme === "dark" ? "dark" : ""}`}>
       <head>
         <Meta />
         <Links />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+            if (localStorage.theme === '"dark"' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+              document.documentElement.classList.add('dark');
+            } else {
+              document.documentElement.classList.remove('dark')
+            }
+          `,
+          }}
+        ></script>
       </head>
-      <body>
+      <body className="h-full">
         <Outlet />
+        <Modals />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
@@ -35,3 +63,5 @@ export default function App() {
     </html>
   );
 }
+
+export default ClerkApp(App);
