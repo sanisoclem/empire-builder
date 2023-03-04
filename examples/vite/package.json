@@ -22,7 +22,6 @@
     "tailwind-config": "workspace:*",
     "eslint": "^7.32.0",
     "eslint-config-custom": "workspace:*",
-    "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
     "typescript": "^4.8.3",
     "vite": "^3.1.0"

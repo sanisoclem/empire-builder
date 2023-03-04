@@ -4,7 +4,7 @@ import { Button } from "ui";
 
 function App() {
   return (
-    <div className="container">
+    <div className="container text-green-500">
       <h1 className="title">
         Admin <br />
         <span>Kitchen Sink</span>
