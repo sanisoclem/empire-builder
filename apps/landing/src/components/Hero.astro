@@ -1,0 +1,32 @@
+---
+import Link from "./base/Link.astro";
+import heroImage from "../assets/hero.svg";
+import { Icon } from "astro-icon";
+---
+
+<main
+  class="grid lg:grid-cols-2 place-items-center pt-16 pb-8 md:pt-12 md:pb-24">
+  <div class="py-6 md:order-1 hidden md:block">
+    <img
+      src={heroImage}
+      alt="Astronaut in the air"
+    />
+  </div>
+  <div>
+    <h1 class="text-5xl lg:text-6xl xl:text-7xl font-bold lg:tracking-tight xl:tracking-tighter">
+        RULE over your finances
+    </h1>
+    <p class="text-lg mt-4 text-slate-600 max-w-xl">
+      Say goodbye to financial stress and hello to more time for the things you love. With Empire Builder, you'll be doing your finances like a boss. Join the waitlist now! 💰😎
+    </p>
+    <div class="mt-6 flex flex-col sm:flex-row gap-3">
+      <Link
+        href="/waitlist"
+        class="flex gap-1 items-center justify-center"
+        rel="noopener">
+        <Icon class="text-white w-5 h-5" name="bx:bxs-envelope" />
+        Join waitlist
+      </Link>
+    </div>
+  </div>
+</main>
