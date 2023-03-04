@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model user {
+  id                 String      @id @db.Uuid
+  provider_id        String      @db.VarChar(100)
+  provider_type      String      @db.VarChar(100)
+  email              String?
+  created_workspaces workspace[] @relation("workspace_created_byTouser")
+  owned_workspaces   workspace[] @relation("workspace_ownerTouser")
+}
+
+model workspace {
+  id               String            @id @db.Uuid
+  name             String            @db.VarChar(100)
+  owner            String            @db.Uuid
+  created_at       DateTime          @db.Timestamp(6)
+  created_by       String            @db.Uuid
+  accounts         account[]
+  balances         balance[]
+  buckets          bucket[]
+  trading_accounts trading_account[]
+  transactions     transaction[]
+  created_by_user  user              @relation("workspace_created_byTouser", fields: [created_by], references: [id], onUpdate: Restrict)
+  owner_user       user              @relation("workspace_ownerTouser", fields: [owner], references: [id], onUpdate: Restrict)
+
+  @@index([owner], map: "fki_workspace_owner_fkey")
+}
+
+model account {
+  id               Int               @default(autoincrement())
+  workspace_id     String            @db.Uuid
+  name             String            @db.VarChar(100)
+  currency         String            @db.VarChar(20)
+  type             String?           @db.VarChar(100)
+  workspace        workspace         @relation(fields: [workspace_id], references: [id], onUpdate: Restrict)
+  trading_accounts trading_account[]
+
+  @@id([workspace_id, id])
+  @@index([workspace_id], map: "fki_account_workspace_id_fkey")
+}
+
+model balance {
+  id                     Int           @default(autoincrement())
+  workspace_id           String        @db.Uuid
+  ledger_balance         Json          @db.Json
+  budget_balance         Json          @db.Json
+  superseded_by          Int?
+  workspace              workspace     @relation(fields: [workspace_id], references: [id], onUpdate: Restrict)
+  superseded_by_balance  balance?      @relation("balanceTobalance", fields: [workspace_id, superseded_by], references: [workspace_id, id], onUpdate: Restrict, map: "balance_workspace_id_superseded_by_fkey")
+  supersedes_balance     balance?      @relation("balanceTobalance")
+  affecting_transactions transaction[] @relation("transaction_balance_workspace_idTobalance")
+
+  @@id([workspace_id, id])
+  @@unique([workspace_id, superseded_by])
+  @@index([workspace_id, superseded_by], map: "fki_balance_superseded_by_fkey")
+  @@index([workspace_id], map: "fki_balance_workspace_id_fkey")
+}
+
+model bucket {
+  id           Int       @default(autoincrement())
+  workspace_id String    @db.Uuid
+  name         String    @db.VarChar(100)
+  category     String?   @db.VarChar(100)
+  workspace    workspace @relation(fields: [workspace_id], references: [id], onUpdate: Restrict)
+
+  @@id([workspace_id, id])
+  @@index([workspace_id], map: "fki_bucket_workspace_id_fkey")
+}
+
+model trading_account {
+  id                         Int       @default(autoincrement())
+  workspace_id               String    @db.Uuid
+  name                       String    @db.VarChar(100)
+  precision                  Int       @db.SmallInt
+  settlement_account         Int
+  settlement_account_account account   @relation(fields: [settlement_account, workspace_id], references: [id, workspace_id], onUpdate: Restrict)
+  workspace                  workspace @relation(fields: [workspace_id], references: [id], onUpdate: Restrict)
+
+  @@id([workspace_id, id])
+  @@index([workspace_id], map: "fki_trading_account_workspace_id_fkey")
+}
+
+model transaction {
+  id                        Int          @default(autoincrement())
+  workspace_id              String       @db.Uuid
+  date                      DateTime     @db.Date
+  notes                     String?
+  data                      Json         @db.Json
+  created_by                String       @db.Uuid
+  create_at                 DateTime     @db.Date
+  superseded_by             Int?
+  balance                   Int
+  affected_balance          balance      @relation("transaction_balance_workspace_idTobalance", fields: [balance, workspace_id], references: [id, workspace_id], onUpdate: Restrict)
+  superseded_by_transaction transaction? @relation("transactionTotransaction", fields: [workspace_id, superseded_by], references: [workspace_id, id], onUpdate: Restrict)
+  superseded_transaction    transaction? @relation("transactionTotransaction")
+  workspace                 workspace    @relation(fields: [workspace_id], references: [id], onUpdate: Restrict)
+
+  @@id([workspace_id, id])
+  @@unique([workspace_id, superseded_by])
+  @@index([workspace_id, superseded_by], map: "fki_transaction_superseded_by_fkey")
+  @@index([workspace_id], map: "fki_transaction_workspace_id_fkey")
+}
