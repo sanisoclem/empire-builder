@@ -9,7 +9,9 @@
     "test": "turbo run test"
   },
   "devDependencies": {
-    "prettier": "^2.7.1",
+    "prettier": "^2.8.0",
+    "prettier-plugin-tailwindcss": "^0.2.4",
+    "tailwindcss": "^3.2.4",
     "turbo": "latest"
   },
   "packageManager": "pnpm@7.15.0"

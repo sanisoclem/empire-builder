@@ -7,7 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import styles from "~/styles.css";
+import styles from "~/tailwind.css";
 import { Analytics } from "@vercel/analytics/react";
 
 export const meta: MetaFunction = () => ({
