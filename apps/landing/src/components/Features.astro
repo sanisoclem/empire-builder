@@ -1,0 +1,67 @@
+---
+import { Icon } from "astro-icon";
+
+const features = [
+  {
+    title: "360 View",
+    description:
+      "Duis at mattis nisi, vitae vulputate enim. Donec nec porta erat. Proin convallis, nibh at feugiat dignissim, risus enim rhoncus nibh, sit amet lacinia nulla nulla sit amet lectus",
+    icon: "bx:bxs-briefcase",
+  },
+  {
+    title: "Multi Currency",
+    description:
+      "Nullam sapien ligula, fringilla nec enim sit amet, viverra sagittis libero. Proin auctor, justo vel scelerisque rhoncus, sem nulla luctus quam, et sagittis lorem ex eget sapien.",
+    icon: "bx:bxs-window-alt",
+  },
+  {
+    title: "Stock Portfolios",
+    description:
+      "Donec eu eleifend ipsum, id imperdiet quam. Aenean viverra non erat eget sagittis. Vestibulum a diam consectetur, placerat lorem volutpat, tempor dui.",
+    icon: "bx:bxs-data",
+  },
+  {
+    title: "Crypto Currencies",
+    description:
+      "Praesent ultricies justo justo, nec volutpat ipsum tincidunt sed. Donec et lectus suscipit, facilisis turpis in, ultricies sapien. Suspendisse et dolor vel neque tempus sagittis. ",
+    icon: "bx:bxs-bot",
+  },
+  {
+    title: "Budgeting",
+    description:
+      "Duis fringilla mauris vel imperdiet ultricies. Fusce blandit, lorem iaculis tempor pulvinar, metus libero pretium justo, id maximus ante ipsum in odio. Maecenas feugiat erat augue.",
+    icon: "bx:bxs-file-find",
+  },
+  {
+    title: "Goals that actually work",
+    description:
+      "Aenean blandit mauris ut lorem vestibulum, at tempor mauris bibendum. Suspendisse ut ornare eros. Praesent vulputate risus mauris, non aliquet ligula dapibus in.",
+    icon: "bx:bxs-user",
+  },
+];
+---
+
+<div class="mt-16 md:mt-0">
+  <h2 class="text-4xl lg:text-5xl font-bold lg:tracking-tight">
+    Level up your finance game
+  </h2>
+  <p class="text-lg mt-4 text-slate-600">
+    We've got you covered, whether you're paying off student loans or making bank with TSLA stock.
+  </p>
+</div>
+
+<div class="grid sm:grid-cols-2 md:grid-cols-3 mt-16 gap-16">
+  {
+    features.map((item) => (
+      <div class="flex gap-4 items-start">
+        <div class="mt-1 bg-black rounded-full  p-2 w-8 h-8 shrink-0">
+          <Icon class="text-white" name={item.icon} />
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg">{item.title}</h3>{" "}
+          <p class="text-slate-500 mt-2 leading-relaxed">{item.description}</p>
+        </div>
+      </div>
+    ))
+  }
+</div>

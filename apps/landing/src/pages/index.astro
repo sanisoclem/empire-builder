@@ -1,0 +1,18 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Hero from "../components/Hero.astro";
+import Features from "../components/Features.astro";
+
+const meta = {
+  title: "Empire Builder",
+  description: "Rule over your finances.",
+};
+---
+
+<Layout meta={meta}>
+  <main class="max-w-screen-xl mx-auto px-5">
+		<Hero />
+    <Features />
+    <!-- <CallToAction /> -->
+  </main>
+</Layout>
