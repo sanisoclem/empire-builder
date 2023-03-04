@@ -18,7 +18,7 @@ export const loader: LoaderFunction = async (args) => {
 export default function Index() {
   const loaderData = useLoaderData();
   return (
-    <div className="container">
+    <div className="container stuff">
       {JSON.stringify(loaderData)}
       <h1 className="title">
         Blog <br />
