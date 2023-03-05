@@ -184,4 +184,40 @@ export class WorkspaceClient {
       }
     });
   }
+
+  async createBucket(
+    workspaceId: string,
+    name: string,
+    category: string | null
+  ) {
+    const { customClaims } = await requireOnboarded(this.args);
+    if (!customClaims.workspaces.includes(workspaceId))
+      throw new Response('Unauthorized', { status: 403 });
+
+    const { id } = await this.dbClient.exec((c) =>
+      c.bucket.create({
+        data:{
+          name,
+          category,
+          workspace_id: workspaceId
+        }
+      })
+    );
+
+    return id;
+  }
+  
+  async getBucketBalances(workspaceId: string) {
+    const { customClaims } = await requireOnboarded(this.args);
+    if (!customClaims.workspaces.includes(workspaceId))
+      throw new Response('Unauthorized', { status: 403 });
+
+    return await this.dbClient.client.bucket.findMany({
+      where: {
+        workspace_id: {
+          equals: fromCompressedId(workspaceId)
+        }
+      }
+    });
+  }
 }

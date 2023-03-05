@@ -1,7 +1,12 @@
 import {
   BanknotesIcon,
+  CalculatorIcon,
   ChartPieIcon,
   ChevronDoubleRightIcon,
+  HomeModernIcon,
+  PresentationChartBarIcon,
+  PresentationChartLineIcon,
+  RectangleGroupIcon,
   RectangleStackIcon
 } from '@heroicons/react/24/outline';
 import { ChevronDoubleLeftIcon } from '@heroicons/react/24/solid';
@@ -31,9 +36,19 @@ export default function Sidebar({ workspaceId, className, version, ...props }: S
       icon: <RectangleStackIcon className="h-6 w-6" />
     },
     {
-      href: ROUTES.workspace(workspaceId).transactions,
-      label: 'Transactions',
-      icon: <BanknotesIcon className="h-6 w-6" />
+      href: ROUTES.workspace(workspaceId).stock.manage,
+      label: 'Stock Portfolio',
+      icon: <PresentationChartLineIcon className="h-6 w-6" />
+    },
+    {
+      href: ROUTES.workspace(workspaceId).otherAssets.manage,
+      label: 'Other Assets',
+      icon: <HomeModernIcon className="h-6 w-6" />
+    },
+    {
+      href: ROUTES.workspace(workspaceId).budget.manage,
+      label: 'Budget',
+      icon: <CalculatorIcon className="h-6 w-6" />
     }
   ];
 
@@ -53,14 +68,14 @@ export default function Sidebar({ workspaceId, className, version, ...props }: S
   return (
     <div
       data-state={expanded ? 'expanded' : ''}
-      className={`sidebar group border-r bg-indigo-900 text-white dark:text-white border-solid dark:border-stone-600 border-stone-300 flex w-20 flex-col items-stretch dark:bg-stone-800 transition-all data-[state=expanded]:w-72 ${
+      className={`sidebar group flex w-20 flex-col items-stretch border-r border-solid border-stone-300 bg-indigo-900 text-white transition-all data-[state=expanded]:w-72 dark:border-stone-600 dark:bg-stone-800 dark:text-white ${
         className ?? ''
       }`}
       {...props}
     >
       <div className="flex h-[4rem] items-center justify-start px-6">
         <Link to="/" className="text-2xl">
-          <span className="font-extrabold  dark:text-transparent  transition-colors bg-clip-text bg-gradient-to-r from-indigo-500 to-pink-400">
+          <span className="bg-gradient-to-r  from-indigo-500  to-pink-400 bg-clip-text font-extrabold transition-colors dark:text-transparent">
             {expanded ? 'Empire' : 'E'}
           </span>
           <span className="text-stone-300">{expanded ? 'builder' : 'b'}</span>
@@ -74,24 +89,26 @@ export default function Sidebar({ workspaceId, className, version, ...props }: S
                 data-state={expanded ? 'expanded' : 'collapsed'}
                 data-current={l.href === activeHref ? 'true' : ''}
                 data-pending={l.href === activeHref && navPending ? 'true' : ''}
-                className="flex p-2 data-[state=expanded]:justify-start data-[state=collapsed]:justify-center mx-4 rounded-lg text-stone-200 hover:bg-white/10 dark:hover:bg-white/10 dark:text-stone-300 dark:hover:text-white dark:data-[current=true]:text-white data-[current=true]:text-stone-900 hover:text-white gap-x-2 dark:from-sky-700 dark:to-sky-600/90 from-sky-300 to-sky-400/90  outline-none transition-colors data-[pending=true]:animate-pulse data-[current=true]:bg-gradient-to-r data-[pending=true]:bg-gradient-to-r"
+                className="mx-4 flex gap-x-2 rounded-lg from-sky-300 to-sky-400/90 p-2 text-stone-200 outline-none transition-colors hover:bg-white/10 hover:text-white data-[pending=true]:animate-pulse data-[state=expanded]:justify-start data-[state=collapsed]:justify-center data-[current=true]:bg-gradient-to-r data-[pending=true]:bg-gradient-to-r data-[current=true]:text-stone-900 dark:from-sky-700  dark:to-sky-600/90 dark:text-stone-300 dark:hover:bg-white/10 dark:hover:text-white dark:data-[current=true]:text-white"
                 to={l.href}
               >
                 <span className="flex-none">{l.icon}</span>
-                <span className="hidden whitespace-nowrap group-data-[state=expanded]:inline">{l.label}</span>
+                <span className="hidden whitespace-nowrap group-data-[state=expanded]:inline">
+                  {l.label}
+                </span>
               </Link>
             </li>
           ))}
         </ul>
       </div>
       <div
-        className="py-1 text-center font-mono text-[0.6rem] overflow-hidden text-ellipsis p-1"
+        className="overflow-hidden text-ellipsis p-1 py-1 text-center font-mono text-[0.6rem]"
         title={version}
       >
         {version}
       </div>
       <button
-        className="flex-none justify-self-end hover:bg-white/10 bg-white/5 p-2 text-center hover:bg-opacity-50"
+        className="flex-none justify-self-end bg-white/5 p-2 text-center hover:bg-white/10 hover:bg-opacity-50"
         onClick={toggleSidebar}
       >
         {!expanded && <ChevronDoubleRightIcon className="inline-block w-6" />}

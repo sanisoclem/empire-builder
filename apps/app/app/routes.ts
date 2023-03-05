@@ -46,13 +46,25 @@ export const ROUTES = route('/', {
   createWorkspace: 'create-workspace',
   workspace: parameterizedRoute((workspaceId) => `ws/${workspaceId}/`, {
     dashboard: 'dashboard',
-    accounts: 'accounts',
-    transactions: 'transactions',
     createAccount: 'account/create',
-    account: parameterizedRoute((accountId) => `account/${accountId}/`, {
+    accounts: 'a',
+    account: parameterizedRoute((accountId) => `a/${accountId}/`, {
       transactions: '',
       update: 'update'
-    })
+    }),
+    createCategory: 'c/create',
+    category: parameterizedRoute((categoryId) => `c/${categoryId}/`, {
+      update: 'update'
+    }),
+    budget: route('b/', {
+      manage: '',
+    }),
+    stock:  route('s/', {
+      manage: '',
+    }),
+    otherAssets:  route('o/', {
+      manage: '',
+    }),
   })
 });
 

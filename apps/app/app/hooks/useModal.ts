@@ -9,6 +9,7 @@ export const useModal = () => {
       setAccountModalState((s) => ({
         ...s,
         open: true,
+        editing: null,
         title: 'New Account',
         workspaceId,
         currencies

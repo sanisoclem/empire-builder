@@ -44,8 +44,8 @@ export default function AccountList({ accounts, onViewTransactions, onEditAccoun
   }));
   return (
     <>
-      <table className="min-w-full relative table-fixed divide-y divide-stone-200 dark:divide-stone-600">
-        <thead className="bg-stone-100 uppercase sticky top-0 dark:bg-stone-700">
+      <table className="relative min-w-full table-fixed divide-y divide-stone-200 dark:divide-stone-600">
+        <thead className="sticky top-0 bg-stone-100 uppercase dark:bg-stone-700">
           <tr>
             {/* <th scope="col" className="p-4">
               <div className="flex items-center">
@@ -93,7 +93,7 @@ export default function AccountList({ accounts, onViewTransactions, onEditAccoun
                 </div>
               </td> */}
               <td
-                className="w-full whitespace-nowrap p-4 text-sm font-normal text-stone-500 dark:text-stone-400"
+                className="w-full cursor-pointer whitespace-nowrap p-4 text-sm font-normal text-stone-500 dark:text-stone-400"
                 onClick={() => onViewTransactions?.(account.accountId)}
               >
                 <div className="text-base font-semibold text-stone-900 dark:text-white">
@@ -119,14 +119,14 @@ export default function AccountList({ accounts, onViewTransactions, onEditAccoun
                 {account.flowFraction}
               </td>
               <td className="whitespace-nowrap p-4 pr-0 text-right font-mono font-medium text-stone-900 dark:text-white">
-                <div className="flex gap-x-1 justify-end items-center">
-              {account.balanceType === 'positive' && (
-                  <PlusIcon className="h-4 w-4 text-green-500" />
-                )}
-                {account.balanceType === 'negative' && (
-                  <MinusIcon className="h-4 w-4 text-red-500" />
-                )}
-                {account.balanceWhole.toLocaleString()}
+                <div className="flex items-center justify-end gap-x-1">
+                  {account.balanceType === 'positive' && (
+                    <PlusIcon className="h-4 w-4 text-green-500" />
+                  )}
+                  {account.balanceType === 'negative' && (
+                    <MinusIcon className="h-4 w-4 text-red-500" />
+                  )}
+                  {account.balanceWhole.toLocaleString()}
                 </div>
               </td>
               <td className="whitespace-nowrap p-4 pl-0  text-left font-mono text-sm font-light text-stone-900 dark:text-white">
