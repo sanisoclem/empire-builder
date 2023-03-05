@@ -26,7 +26,7 @@ export class WorkspaceClient {
     const workspaceId = genCompressedId();
     const user = await this.authClient.getUser(req.userId);
 
-    this.dbClient.exec((c) =>
+    await this.dbClient.exec((c) =>
       c.$transaction([
         c.user.create({
           data: {
