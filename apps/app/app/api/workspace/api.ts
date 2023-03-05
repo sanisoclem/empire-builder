@@ -1,5 +1,5 @@
 import { AuthClient, requireOnboarded } from '~api/auth';
-import { fromCompressedId, genCompressedId } from '~api/id';
+import { fromCompressedId, genCompressedId, toCompressedId } from '~api/id';
 import { DbClient } from 'db-totality';
 import { DataFunctionArgs } from '@remix-run/server-runtime';
 
@@ -90,13 +90,19 @@ export class WorkspaceClient {
   async getAllWorkspaces() {
     const { customClaims } = await requireOnboarded(this.args);
 
-    return await this.dbClient.client.workspace.findMany({
-      where: {
-        id: {
-          in: customClaims.workspaces.map(fromCompressedId)
+    return (
+      await this.dbClient.client.workspace.findMany({
+        where: {
+          id: {
+            in: customClaims.workspaces.map(fromCompressedId)
+          }
         }
-      }
-    });
+      })
+    ).map((a) => ({
+      id: toCompressedId(a.id),
+      owner: toCompressedId(a.owner),
+      created_by: toCompressedId(a.created_by)
+    }));
   }
 
   async getWorkspaceInfo(workspaceId: string) {
