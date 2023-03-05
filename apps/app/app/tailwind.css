@@ -31,10 +31,7 @@ html {
 }
 
 .menu-item {
-  @apply flex w-full items-center rounded-sm px-2 py-2 text-sm text-stone-900;
+  @apply flex w-full items-center rounded-sm px-2 py-2 text-sm text-stone-700 font-semibold;
   @apply data-[headlessui-state=active]:bg-indigo-500 data-[headlessui-state=active]:text-white;
 }
 
-.menu-items {
-  @apply w-56 divide-y divide-stone-100 rounded-sm bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none;
-}

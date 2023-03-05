@@ -5,7 +5,6 @@ import { WorkspaceClient } from '~api/workspace/api';
 import { Button, PageHeader } from '~components';
 import AccountList from '~components/account/account-list';
 import { useLoaderDataStrict, useModal, useRouteData } from '~hooks';
-import { workspaceRouteData } from '../ws.$workspaceId';
 
 const loaderSchema = z.object({
   accounts: z.array(
@@ -29,36 +28,31 @@ export const loader = async (args: DataFunctionArgs): Promise<z.infer<typeof loa
 };
 
 export default function Accounts() {
-  const { currencies, workspaceId } = useRouteData(workspaceRouteData);
   const { accounts } = useLoaderDataStrict(loaderSchema);
   const { newAccount } = useModal();
-  const fakeAccounts = accounts
-    .map((a) => ({
-      accountId: a.id,
-      name: a.name,
-      type: a.type ?? '',
-      denomination: a.currency_id,
-      precision: currencies.find((c) => c.id === a.currency_id)!.precision
-    }))
-    .map((a) => ({
-      ...a,
-      balance:
-        ((Math.random() - 0.5) * Math.pow(10, Math.max(a.precision, 6) + 1)) /
-        Math.pow(10, a.precision),
-      flow: (Math.random() - 0.5) * 10000
-    }));
+  const fakeAccounts = accounts.map((a) => ({
+    accountId: a.id,
+    name: a.name,
+    type: a.type ?? '',
+    denomination: a.currency_id,
+    balance: 0, //(Math.random() - 0.5) * 10000,
+    flow: 0, //(Math.random() - 0.5) * 10000,
+    precision: currencies.find((c) => c.id === a.currency_id)!.precision
+  }));
 
   const handleCreateAccount = () => {
     newAccount(currencies, workspaceId);
   };
   return (
     <div className="w-full self-stretch bg-white dark:bg-stone-800">
-      <nav className="flex h-24 items-center justify-between px-4 py-6">
+      <nav className="flex items-center justify-between px-4 py-6">
         <PageHeader>Accounts</PageHeader>
         <Button onClick={handleCreateAccount}>New Account</Button>
       </nav>
-      <div className="h-[calc(100vh-10rem)] w-full overflow-auto">
-        <AccountList accounts={fakeAccounts} />
+      <div className="w-full overflow-x-auto">
+        <div className="overflow-hidden shadow">
+          <AccountList accounts={fakeAccounts} />
+        </div>
       </div>
     </div>
   );
