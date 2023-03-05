@@ -23,17 +23,17 @@ export default function Sidebar({ workspaceId, className, version, ...props }: S
     {
       href: ROUTES.workspace(workspaceId).dashboard,
       label: 'Dashboard',
-      icon: <ChartPieIcon className="sidebar-menu-icon" />
+      icon: <ChartPieIcon className="h-6 w-6" />
     },
     {
       href: ROUTES.workspace(workspaceId).accounts,
       label: 'Accounts',
-      icon: <RectangleStackIcon className="sidebar-menu-icon" />
+      icon: <RectangleStackIcon className="h-6 w-6" />
     },
     {
       href: ROUTES.workspace(workspaceId).transactions,
       label: 'Transactions',
-      icon: <BanknotesIcon className="sidebar-menu-icon" />
+      icon: <BanknotesIcon className="h-6 w-6" />
     }
   ];
 
@@ -53,7 +53,7 @@ export default function Sidebar({ workspaceId, className, version, ...props }: S
   return (
     <div
       data-state={expanded ? 'expanded' : ''}
-      className={`sidebar border-r bg-indigo-900 text-white dark:text-white border-solid dark:border-stone-600 border-stone-300 flex w-20 flex-col items-stretch dark:bg-stone-800 transition-all data-[state=expanded]:w-72 ${
+      className={`sidebar group border-r bg-indigo-900 text-white dark:text-white border-solid dark:border-stone-600 border-stone-300 flex w-20 flex-col items-stretch dark:bg-stone-800 transition-all data-[state=expanded]:w-72 ${
         className ?? ''
       }`}
       {...props}
@@ -63,7 +63,7 @@ export default function Sidebar({ workspaceId, className, version, ...props }: S
           <span className="font-extrabold  dark:text-transparent  transition-colors bg-clip-text bg-gradient-to-r from-indigo-500 to-pink-400">
             {expanded ? 'Empire' : 'E'}
           </span>
-          <span className="text-stone-300">{expanded ? 'builder' : 'B'}</span>
+          <span className="text-stone-300">{expanded ? 'builder' : 'b'}</span>
         </Link>
       </div>
       <div className="flex-1 space-y-6 py-6">
@@ -78,7 +78,7 @@ export default function Sidebar({ workspaceId, className, version, ...props }: S
                 to={l.href}
               >
                 <span className="flex-none">{l.icon}</span>
-                <span className="sidebar-menu-label whitespace-nowrap">{l.label}</span>
+                <span className="hidden whitespace-nowrap group-data-[state=expanded]:inline">{l.label}</span>
               </Link>
             </li>
           ))}

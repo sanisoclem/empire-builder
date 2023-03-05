@@ -1,7 +1,7 @@
-import { AuthClient, requireOnboarded } from "~api/auth";
-import { fromCompressedId, genCompressedId } from "~api/id";
-import { PrismaClient } from "db-totality";
-import { DataFunctionArgs } from "@remix-run/server-runtime";
+import { AuthClient, requireOnboarded } from '~api/auth';
+import { fromCompressedId, genCompressedId } from '~api/id';
+import { DbClient } from 'db-totality';
+import { DataFunctionArgs } from '@remix-run/server-runtime';
 
 interface OnboardingRequest {
   userId: string;
@@ -14,10 +14,10 @@ interface OnboardingResult {
 }
 
 export class WorkspaceClient {
-  private dbClient: PrismaClient;
+  private dbClient: DbClient;
   private authClient: AuthClient;
   constructor(private args: DataFunctionArgs) {
-    this.dbClient = new PrismaClient();
+    this.dbClient = new DbClient();
     this.authClient = new AuthClient(args);
   }
 
@@ -26,43 +26,38 @@ export class WorkspaceClient {
     const workspaceId = genCompressedId();
     const user = await this.authClient.getUser(req.userId);
 
-    this.dbClient.$connect();
-    try {
-      await this.dbClient.$transaction([
-        this.dbClient.user.create({
+    this.dbClient.exec((c) =>
+      c.$transaction([
+        c.user.create({
           data: {
             id: fromCompressedId(userId),
             provider_id: req.userId,
             provider_type: req.providerType,
             email: user.primaryEmailAddressId
-              ? user.emailAddresses.find(
-                  (e) => e.id === user.primaryEmailAddressId
-                )!.emailAddress
-              : "loopback@empire-builder.online",
-          },
+              ? user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId)!.emailAddress
+              : 'loopback@empire-builder.online'
+          }
         }),
-        this.dbClient.workspace.create({
+        c.workspace.create({
           data: {
             id: fromCompressedId(workspaceId),
             name: req.workspaceName,
             owner: fromCompressedId(userId),
             created_at: new Date(),
-            created_by: fromCompressedId(userId),
-          },
-        }),
-      ]);
-    } finally {
-      this.dbClient.$disconnect();
-    }
+            created_by: fromCompressedId(userId)
+          }
+        })
+      ])
+    );
 
     await this.authClient.updateUserPublicMetadata(req.userId, {
       appUserId: userId,
-      workspaces: [workspaceId],
+      workspaces: [workspaceId]
     });
 
     return {
       userId,
-      workspaceId,
+      workspaceId
     };
   }
 
@@ -70,49 +65,116 @@ export class WorkspaceClient {
     const workspaceId = genCompressedId();
     const { customClaims, userId } = await requireOnboarded(this.args);
 
-    this.dbClient.$connect();
-    try {
-      this.dbClient.workspace.create({
+    this.dbClient.exec((c) =>
+      c.workspace.create({
         data: {
           id: fromCompressedId(workspaceId),
           name: name,
           owner: fromCompressedId(customClaims.appUserId),
           created_at: new Date(),
-          created_by: fromCompressedId(customClaims.appUserId),
-        },
-      });
-    } finally {
-      this.dbClient.$disconnect();
-    }
+          created_by: fromCompressedId(customClaims.appUserId)
+        }
+      })
+    );
 
     await this.authClient.updateUserPublicMetadata(userId, {
       ...customClaims,
-      workspaces: [...customClaims.workspaces, workspaceId],
+      workspaces: [...customClaims.workspaces, workspaceId]
     });
 
     return {
-      workspaceId,
+      workspaceId
     };
   }
 
   async getAllWorkspaces() {
     const { customClaims } = await requireOnboarded(this.args);
 
-    return await this.dbClient.workspace.findMany({
+    return await this.dbClient.client.workspace.findMany({
       where: {
         id: {
-          in: customClaims.workspaces.map(fromCompressedId),
-        },
-      },
+          in: customClaims.workspaces.map(fromCompressedId)
+        }
+      }
     });
   }
 
   async getWorkspaceInfo(workspaceId: string) {
     const { customClaims } = await requireOnboarded(this.args);
     if (!customClaims.workspaces.includes(workspaceId))
-      throw new Response("Unauthorized", { status: 403 });
+      throw new Response('Unauthorized', { status: 403 });
 
     // TODO: return accounts, buckets etc
     return {};
+  }
+
+  async getCurrencies() {
+    return await this.dbClient.client.currency.findMany();
+  }
+
+  async createAccount(
+    workspaceId: string,
+    name: string,
+    accountType: string | null,
+    currencyId: string,
+    notes: string | null
+  ) {
+    const { customClaims } = await requireOnboarded(this.args);
+    if (!customClaims.workspaces.includes(workspaceId))
+      throw new Response('Unauthorized', { status: 403 });
+
+    const { id } = await this.dbClient.exec((c) =>
+      c.account.create({
+        data: {
+          name,
+          currency_id: currencyId,
+          workspace_id: fromCompressedId(workspaceId),
+          type: accountType
+        }
+      })
+    );
+
+    return id;
+  }
+
+  async updateAccount(
+    workspaceId: string,
+    accountId: number,
+    name: string,
+    accountType: string | null,
+    notes: string | null
+  ) {
+    const { customClaims } = await requireOnboarded(this.args);
+    if (!customClaims.workspaces.includes(workspaceId))
+      throw new Response('Unauthorized', { status: 403 });
+
+    await this.dbClient.exec((c) =>
+      c.account.update({
+        where: {
+          workspace_id_id: {
+            id: accountId,
+            workspace_id: fromCompressedId(workspaceId)
+          }
+        },
+        data: {
+          name,
+          type: accountType
+        }
+      })
+    );
+  }
+
+  async getAccountBalances(workspaceId: string) {
+    const { customClaims } = await requireOnboarded(this.args);
+    if (!customClaims.workspaces.includes(workspaceId))
+      throw new Response('Unauthorized', { status: 403 });
+
+    return await this.dbClient.client.account.findMany({
+      where: {
+        workspace_id: {
+          equals: fromCompressedId(workspaceId)
+        }
+      }
+    });
   }
 }

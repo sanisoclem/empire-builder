@@ -38,6 +38,7 @@ importers:
       db-totality: workspace:*
       eslint: ^8.28.0
       jotai: ^2.0.3
+      logger: workspace:*
       react: ^18.2.0
       react-dom: ^18.2.0
       react-hook-form: ^7.43.4
@@ -61,6 +62,7 @@ importers:
       '@vercel/remix-entry-server': 0.1.0_react@18.2.0
       db-totality: link:../../packages/db-totality
       jotai: 2.0.3_react@18.2.0
+      logger: link:../../packages/logger
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-hook-form: 7.43.4_react@18.2.0

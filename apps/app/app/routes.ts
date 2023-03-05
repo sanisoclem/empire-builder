@@ -47,6 +47,15 @@ export const ROUTES = route('/', {
   workspace: parameterizedRoute((workspaceId) => `ws/${workspaceId}/`, {
     dashboard: 'dashboard',
     accounts: 'accounts',
-    transactions: 'transactions'
-  }),
+    transactions: 'transactions',
+    createAccount: 'account/create',
+    account: parameterizedRoute((accountId) => `account/${accountId}/`, {
+      transactions: '',
+      update: 'update'
+    })
+  })
 });
+
+export const ROUTE_DEFS = {
+  workspace: 'routes/ws.$workspaceId'
+} as const;

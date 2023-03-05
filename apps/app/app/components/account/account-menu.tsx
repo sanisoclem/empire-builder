@@ -4,7 +4,7 @@ import {
   BanknotesIcon,
   EllipsisVerticalIcon,
   PencilIcon
-} from '@heroicons/react/20/solid';
+} from '@heroicons/react/24/outline';
 import { Fragment } from 'react';
 import { usePopper } from '~hooks';
 
@@ -15,7 +15,7 @@ type Props = {
 };
 
 export default function AccountMenu({ onRename, onTransactions, onCloseAccount }: Props) {
-  let [trigger, container] = usePopper({
+  const [trigger, container] = usePopper({
     placement: 'bottom-end',
     strategy: 'fixed',
     modifiers: [
@@ -31,7 +31,7 @@ export default function AccountMenu({ onRename, onTransactions, onCloseAccount }
 
   return (
     <>
-      <Menu as="div" className="relative inline-block">
+      <Menu as="div" className="inline-block">
         <div>
           <Menu.Button ref={trigger} className="">
             <EllipsisVerticalIcon className="h-6 w-auto" aria-hidden="true" />
@@ -47,11 +47,10 @@ export default function AccountMenu({ onRename, onTransactions, onCloseAccount }
             leaveFrom="transform opacity-100"
             leaveTo="transform opacity-0"
           >
-            <Menu.Items ref={container} className="menu-items">
+            <Menu.Items ref={container} className="w-56 divide-y divide-stone-300 rounded-lg bg-stone-50 drop-shadow-2xl ring-1 ring-stone-900 ring-opacity-20 focus:outline-none">
               <div className="px-1 py-1 ">
                 <Menu.Item>
-                  <button className="menu-item" onClick={() => onTransactions?.()}>
-                    <BanknotesIcon className="mr-2 h-5 w-5" aria-hidden="true" />
+                  <button className="menu-item group" onClick={() => onTransactions?.()}>
                     Transactions
                   </button>
                 </Menu.Item>
@@ -59,13 +58,11 @@ export default function AccountMenu({ onRename, onTransactions, onCloseAccount }
               <div className="px-1 py-1 ">
                 <Menu.Item>
                   <button className="menu-item" onClick={() => onRename?.()}>
-                    <PencilIcon className="mr-2 h-5 w-5" aria-hidden="true" />
                     Edit
                   </button>
                 </Menu.Item>
                 <Menu.Item>
                   <button className="menu-item" onClick={() => onCloseAccount?.()}>
-                    <ArchiveBoxXMarkIcon className="mr-2 h-5 w-5" aria-hidden="true" />
                     Close Account
                   </button>
                 </Menu.Item>

@@ -34,13 +34,21 @@ model workspace {
   @@index([owner], map: "fki_workspace_owner_fkey")
 }
 
+model currency {
+  id        String    @id @db.VarChar(20)
+  name      String    @db.VarChar(100)
+  precision Int
+  accounts  account[]
+}
+
 model account {
   id               Int               @default(autoincrement())
   workspace_id     String            @db.Uuid
   name             String            @db.VarChar(100)
-  currency         String            @db.VarChar(20)
+  currency_id      String            @db.VarChar(20)
   type             String?           @db.VarChar(100)
   workspace        workspace         @relation(fields: [workspace_id], references: [id], onUpdate: Restrict)
+  currency         currency          @relation(fields: [currency_id], references: [id], onUpdate: Restrict)
   trading_accounts trading_account[]
 
   @@id([workspace_id, id])
