@@ -37,8 +37,9 @@ export default function Accounts() {
     name: a.name,
     type: a.type ?? '',
     denomination: a.currency_id,
-    balance: 0,
-    flow: 0
+    balance: 0, //(Math.random() - 0.5) * 10000,
+    flow: 0, //(Math.random() - 0.5) * 10000,
+    precision: currencies.find((c) => c.id === a.currency_id)!.precision
   }));
 
   const handleCreateAccount = () => {

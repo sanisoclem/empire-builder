@@ -1,95 +1,116 @@
-import { Dialog, Transition } from '@headlessui/react';
 import { useFetcher } from '@remix-run/react';
 import { useAtom } from 'jotai';
-import { Fragment } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { ROUTES } from '~/routes';
 import { Button, Input, InputCombo, Textarea } from '~components';
 import { accountModalAtom } from '~hooks';
+import { createModal } from './wrapper';
+import { useFetch } from 'usehooks-ts';
 
-export default function AccountModal() {
+const accountFormSchema = z.object({
+  name: z.string().min(1, { message: 'name is required' }).max(100),
+  accountType: z.string().max(100).nullable(),
+  notes: z.string().max(1024).nullable(),
+  currencyObj: z.object(
+    { id: z.string(), name: z.string() },
+    { required_error: 'currency is required' }
+  )
+});
+
+function AccountModal() {
   const [state, setState] = useAtom(accountModalAtom);
   const fetcher = useFetcher();
-  const { register, control } = useForm();
-  const currencyObj = useWatch({ name: 'currencyObj', control });
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    register
+  } = useForm<z.infer<typeof accountFormSchema>>({ resolver: zodResolver(accountFormSchema) });
+  const values = useWatch({ control });
 
-  function handleSave() {}
+  function handleSave() {
+    const parsed = accountFormSchema.parse(values);
+    fetcher.submit(
+      {
+        workspaceId: state.workspaceId,
+        currencyId: parsed.currencyObj.id,
+        name: parsed.name,
+        accountType: parsed.accountType ?? '',
+        notes: parsed.notes ?? ''
+      },
+      {
+        action: ROUTES.workspace(state.workspaceId).createAccount,
+        method: 'post'
+      }
+    );
+  }
   function handleCancel() {
     setState((f) => ({ ...f, open: false }));
   }
 
+  useEffect(() => {
+    if (fetcher.type === 'done') handleCancel();
+  }, [fetcher.type]);
+
+  const handleError = (e: unknown) => {
+    console.log(e);
+  };
+
   return (
     <>
-      <Transition appear show={state.open} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={handleCancel}>
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-black bg-opacity-25" />
-          </Transition.Child>
+      <fetcher.Form className="space-y-6" onSubmit={handleSubmit(handleSave, handleError)}>
+        <Input
+          label="Account name"
+          placeholder="a descriptive name, you can change this later"
+          type="text"
+          {...register('name')}
+          errors={errors}
+        />
+        <Controller
+          name="currencyObj"
+          control={control}
+          render={({ field }) => (
+            <InputCombo
+              label="Denomination"
+              choices={state.currencies.map((c) => ({
+                id: c.id,
+                name: `${c.name} (${c.id})`
+              }))}
+              placeholder="denomination"
+              {...field}
+              errors={errors}
+            />
+          )}
+        />
+        <Input
+          label="Account Type"
+          type="text"
+          {...register('accountType')}
+          placeholder="e.g., Cash Account, Settlement Account"
+          errors={errors}
+        />
+        <Textarea
+          label="Notes"
+          placeholder="account notes"
+          rows={4}
+          {...register('notes')}
+          errors={errors}
+        />
 
-          <fetcher.Form
-            className="fixed inset-0 overflow-y-auto"
-            action={ROUTES.workspace(state.workspaceId).createAccount}
-            method="post"
-          >
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
-              >
-                <Dialog.Panel className="w-full max-w-md transform space-y-6 overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                    New Account
-                  </Dialog.Title>
-                  <div className="space-y-6">
-                    <input type="hidden" name="workspaceId" value={state.workspaceId} />
-                    <input type="hidden" name="currencyId" value={currencyObj?.id} />
-                    <Input label="Account name" type="text" name="name" />
-                    <Input label="Account Type" type="text" name="accountType" />
-                    <Textarea label="Notes" placeholder="account notes" rows={4} name="notes" />
-                    <Controller
-                      name="currencyObj"
-                      control={control}
-                      render={({ field }) => (
-                        <InputCombo
-                          label="Denomination"
-                          choices={state.currencies.map((c) => ({
-                            id: c.id,
-                            name: `${c.name} (${c.id})`
-                          }))}
-                          placeholder="denomination"
-                          {...field}
-                        />
-                      )}
-                    />
-                  </div>
-
-                  <div className="flex justify-end gap-2">
-                    <Button type="button" variant="neutral" onClick={handleCancel}>
-                      Cancel
-                    </Button>
-                    <Button type="submit" onClick={handleSave} isLoading={fetcher.state !== 'idle'}>
-                      Add new account
-                    </Button>
-                  </div>
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
-          </fetcher.Form>
-        </Dialog>
-      </Transition>
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="neutral" onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button type="submit" isLoading={fetcher.state !== 'idle'}>
+            Add new account
+          </Button>
+        </div>
+      </fetcher.Form>
     </>
   );
 }
+
+export default createModal(AccountModal, accountModalAtom);

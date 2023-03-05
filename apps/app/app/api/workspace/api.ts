@@ -115,9 +115,9 @@ export class WorkspaceClient {
   async createAccount(
     workspaceId: string,
     name: string,
-    accountType: string,
+    accountType: string | null,
     currencyId: string,
-    notes: string
+    notes: string | null
   ) {
     const { customClaims } = await requireOnboarded(this.args);
     if (!customClaims.workspaces.includes(workspaceId))

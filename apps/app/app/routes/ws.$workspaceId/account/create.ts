@@ -4,11 +4,11 @@ import { requireParameters } from '~api/policy.server';
 import { WorkspaceClient } from '~api/workspace/api';
 
 const payloadSchema = z.object({
-  workspaceId: z.string(),
-  name: z.string().max(100),
-  accountType: z.string().max(100),
-  currencyId: z.string().max(20),
-  notes: z.string().max(1024)
+  workspaceId: z.string().min(1),
+  name: z.string().min(1).max(100),
+  accountType: z.string().max(100).nullable(),
+  currencyId: z.string().min(1).max(20),
+  notes: z.string().max(1024).nullable()
 });
 
 const paramSchema = z.object({
