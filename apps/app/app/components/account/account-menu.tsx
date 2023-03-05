@@ -15,7 +15,7 @@ type Props = {
 };
 
 export default function AccountMenu({ onRename, onTransactions, onCloseAccount }: Props) {
-  let [trigger, container] = usePopper({
+  const [trigger, container] = usePopper({
     placement: 'bottom-end',
     strategy: 'fixed',
     modifiers: [

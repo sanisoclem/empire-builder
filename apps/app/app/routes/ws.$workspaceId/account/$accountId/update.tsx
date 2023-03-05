@@ -6,16 +6,16 @@ import { WorkspaceClient } from '~api/workspace/api';
 const payloadSchema = z.object({
   name: z.string().min(1).max(100),
   accountType: z.string().max(100).nullable(),
-  currencyId: z.string().min(1).max(20),
   notes: z.string().max(1024).nullable()
 });
 
 const paramSchema = z.object({
+  accountId: z.string(),
   workspaceId: z.string()
 });
 
 export const action: LoaderFunction = async (args) => {
-  const { workspaceId } = requireParameters(args.params, paramSchema);
+  const { workspaceId, accountId } = requireParameters(args.params, paramSchema);
   const wsClient = new WorkspaceClient(args);
   const formData = await args.request.formData();
   const payload = payloadSchema.safeParse(Object.fromEntries(formData));
@@ -23,11 +23,13 @@ export const action: LoaderFunction = async (args) => {
   if (!payload.success) return new Response('Bad Request', { status: 400 });
 
   const data = payload.data;
-  return await wsClient.createAccount(
+  await wsClient.updateAccount(
     workspaceId,
+    parseInt(accountId),
     data.name,
     data.accountType,
-    data.currencyId,
     data.notes
   );
+
+  return {};
 };

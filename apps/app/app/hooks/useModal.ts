@@ -1,20 +1,5 @@
 import { atom, useAtom } from 'jotai';
-
-type Currency = { id: string; name: string; precision: number };
-type AccountModalState = {
-  open: boolean;
-  title: string;
-  workspaceId: string;
-  editing: unknown;
-  currencies: Currency[];
-};
-export const accountModalAtom = atom<AccountModalState>({
-  workspaceId: '',
-  title: '',
-  open: false,
-  editing: null,
-  currencies: []
-});
+import { accountModalAtom, AccountModalState, Currency } from '~components/modal/account';
 
 export const useModal = () => {
   const [, setAccountModalState] = useAtom(accountModalAtom);
@@ -27,6 +12,14 @@ export const useModal = () => {
         title: 'New Account',
         workspaceId,
         currencies
+      })),
+      editAccount: (account: NonNullable<AccountModalState["editing"]>,  workspaceId: string) =>
+      setAccountModalState((s) => ({
+        ...s,
+        open: true,
+        workspaceId,
+        editing: account,
+        title: 'Edit Account'
       }))
   };
 };

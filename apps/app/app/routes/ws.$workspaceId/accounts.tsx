@@ -1,6 +1,6 @@
 import { DataFunctionArgs } from '@remix-run/server-runtime';
 import { z } from 'zod';
-import { requireParameters, requireWorkspaceId } from '~api/policy.server';
+import { requireWorkspaceId } from '~api/policy.server';
 import { WorkspaceClient } from '~api/workspace/api';
 import { Button, PageHeader } from '~components';
 import AccountList from '~components/account/account-list';
@@ -31,7 +31,7 @@ export const loader = async (args: DataFunctionArgs): Promise<z.infer<typeof loa
 export default function Accounts() {
   const { currencies, workspaceId } = useRouteData(workspaceRouteData);
   const { accounts } = useLoaderDataStrict(loaderSchema);
-  const { newAccount } = useModal();
+  const { newAccount, editAccount } = useModal();
   const fakeAccounts = accounts
     .map((a) => ({
       accountId: a.id,
@@ -51,6 +51,10 @@ export default function Accounts() {
   const handleCreateAccount = () => {
     newAccount(currencies, workspaceId);
   };
+  const handleEditAccount = (accountId: number) => {
+    const account = accounts.find((a) => a.id === accountId)!;
+    editAccount({ ...account, notes: '' }, workspaceId);
+  };
   return (
     <div className="w-full self-stretch bg-white dark:bg-stone-800">
       <nav className="flex h-24 items-center justify-between px-4 py-6">
@@ -58,7 +62,7 @@ export default function Accounts() {
         <Button onClick={handleCreateAccount}>New Account</Button>
       </nav>
       <div className="h-[calc(100vh-10rem)] w-full overflow-auto">
-        <AccountList accounts={fakeAccounts} />
+        <AccountList accounts={fakeAccounts} onEditAccount={handleEditAccount} />
       </div>
     </div>
   );

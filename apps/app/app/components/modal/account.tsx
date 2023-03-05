@@ -1,23 +1,51 @@
 import { useFetcher } from '@remix-run/react';
-import { useAtom } from 'jotai';
-import { useEffect, useRef, useState } from 'react';
+import { atom, useAtom } from 'jotai';
+import { useEffect } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ROUTES } from '~/routes';
 import { Button, Input, InputCombo, Textarea } from '~components';
-import { accountModalAtom } from '~hooks';
 import { createModal } from './wrapper';
-import { useFetch } from 'usehooks-ts';
 
-const accountFormSchema = z.object({
+export type Currency = { id: string; name: string; precision: number };
+export type AccountModalState = {
+  open: boolean;
+  title: string;
+  workspaceId: string;
+  editing: {
+    id: number;
+    name: string;
+    type: string | null;
+    notes: string | null;
+  } | null;
+  currencies: Currency[];
+};
+
+const commonFields = z.object({
   name: z.string().min(1, { message: 'name is required' }).max(100),
   accountType: z.string().max(100).nullable(),
-  notes: z.string().max(1024).nullable(),
-  currencyObj: z.object(
-    { id: z.string(), name: z.string() },
-    { required_error: 'currency is required' }
+  notes: z.string().max(1024).nullable()
+});
+const formSchema = z.union([
+  z.intersection(z.object({ id: z.number() }), commonFields),
+  z.intersection(
+    z.object({
+      currencyObj: z.object(
+        { id: z.string(), name: z.string() },
+        { required_error: 'currency is required' }
+      )
+    }),
+    commonFields
   )
+]);
+
+export const accountModalAtom = atom<AccountModalState>({
+  workspaceId: '',
+  title: '',
+  open: false,
+  editing: null,
+  currencies: []
 });
 
 function AccountModal() {
@@ -28,24 +56,48 @@ function AccountModal() {
     handleSubmit,
     formState: { errors },
     register
-  } = useForm<z.infer<typeof accountFormSchema>>({ resolver: zodResolver(accountFormSchema) });
-  const values = useWatch({ control });
+  } = useForm<z.infer<typeof formSchema>>({
+    defaultValues:
+      state.editing !== null
+        ? {
+            id: state.editing.id,
+            accountType: state.editing.type,
+            name: state.editing.name,
+            notes: state.editing.notes
+          }
+        : undefined,
+    resolver: zodResolver(formSchema)
+  });
+  const values: unknown = useWatch({ control });
 
   function handleSave() {
-    const parsed = accountFormSchema.parse(values);
-    fetcher.submit(
-      {
-        workspaceId: state.workspaceId,
-        currencyId: parsed.currencyObj.id,
-        name: parsed.name,
-        accountType: parsed.accountType ?? '',
-        notes: parsed.notes ?? ''
-      },
-      {
-        action: ROUTES.workspace(state.workspaceId).createAccount,
-        method: 'post'
-      }
-    );
+    const parsed = formSchema.parse(values);
+    if ('currencyObj' in parsed) {
+      fetcher.submit(
+        {
+          currencyId: parsed.currencyObj.id,
+          name: parsed.name,
+          accountType: parsed.accountType ?? '',
+          notes: parsed.notes ?? ''
+        },
+        {
+          action: ROUTES.workspace(state.workspaceId).createAccount,
+          method: 'post'
+        }
+      );
+    } else {
+      fetcher.submit(
+        {
+          name: parsed.name,
+          accountType: parsed.accountType ?? '',
+          notes: parsed.notes ?? ''
+        },
+        {
+          action: ROUTES.workspace(state.workspaceId).account(parsed.id.toString()).update,
+          method: 'post'
+        }
+      );
+    }
   }
   function handleCancel() {
     setState((f) => ({ ...f, open: false }));
@@ -55,13 +107,12 @@ function AccountModal() {
     if (fetcher.type === 'done') handleCancel();
   }, [fetcher.type]);
 
-  const handleError = (e: unknown) => {
-    console.log(e);
-  };
-
   return (
     <>
-      <fetcher.Form className="space-y-6" onSubmit={handleSubmit(handleSave, handleError)}>
+      <fetcher.Form className="space-y-6" onSubmit={handleSubmit(handleSave)}>
+        {state.editing !== null && (
+          <input type="hidden" {...register('id', { value: state.editing.id })} />
+        )}
         <Input
           label="Account name"
           placeholder="a descriptive name, you can change this later"
@@ -69,22 +120,24 @@ function AccountModal() {
           {...register('name')}
           errors={errors}
         />
-        <Controller
-          name="currencyObj"
-          control={control}
-          render={({ field }) => (
-            <InputCombo
-              label="Denomination"
-              choices={state.currencies.map((c) => ({
-                id: c.id,
-                name: `${c.name} (${c.id})`
-              }))}
-              placeholder="denomination"
-              {...field}
-              errors={errors}
-            />
-          )}
-        />
+        {state.editing === null && (
+          <Controller
+            name="currencyObj"
+            control={control}
+            render={({ field }) => (
+              <InputCombo
+                label="Denomination"
+                choices={state.currencies.map((c) => ({
+                  id: c.id,
+                  name: `${c.name} (${c.id})`
+                }))}
+                placeholder="denomination"
+                {...field}
+                errors={errors}
+              />
+            )}
+          />
+        )}
         <Input
           label="Account Type"
           type="text"
@@ -105,7 +158,7 @@ function AccountModal() {
             Cancel
           </Button>
           <Button type="submit" isLoading={fetcher.state !== 'idle'}>
-            Add new account
+            {state.editing === null ? 'Add new account' : 'Update account'}
           </Button>
         </div>
       </fetcher.Form>

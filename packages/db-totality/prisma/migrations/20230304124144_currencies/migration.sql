@@ -26,4 +26,4 @@ VALUES
   ('AUD', 'Australian Dollar', 2),
   ('USD', 'U.S. Dollar', 2),
   ('BTC', 'Bitcoin', 8),
-  ('ETH', 'Ethereum', 8) -- using all 18 digits would make things complicated
+  ('ETH', 'Ethereum', 8); -- using all 18 digits would make things complicated

@@ -137,6 +137,33 @@ export class WorkspaceClient {
     return id;
   }
 
+  async updateAccount(
+    workspaceId: string,
+    accountId: number,
+    name: string,
+    accountType: string | null,
+    notes: string | null
+  ) {
+    const { customClaims } = await requireOnboarded(this.args);
+    if (!customClaims.workspaces.includes(workspaceId))
+      throw new Response('Unauthorized', { status: 403 });
+
+    await this.dbClient.exec((c) =>
+      c.account.update({
+        where: {
+          workspace_id_id: {
+            id: accountId,
+            workspace_id: fromCompressedId(workspaceId)
+          }
+        },
+        data: {
+          name,
+          type: accountType
+        }
+      })
+    );
+  }
+
   async getAccountBalances(workspaceId: string) {
     const { customClaims } = await requireOnboarded(this.args);
     if (!customClaims.workspaces.includes(workspaceId))

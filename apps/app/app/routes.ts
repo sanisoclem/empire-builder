@@ -48,8 +48,12 @@ export const ROUTES = route('/', {
     dashboard: 'dashboard',
     accounts: 'accounts',
     transactions: 'transactions',
-    createAccount: 'account/create'
-  }),
+    createAccount: 'account/create',
+    account: parameterizedRoute((accountId) => `account/${accountId}/`, {
+      transactions: '',
+      update: 'update'
+    })
+  })
 });
 
 export const ROUTE_DEFS = {
