@@ -99,6 +99,7 @@ export class WorkspaceClient {
         }
       })
     ).map((a) => ({
+      ...a,
       id: toCompressedId(a.id),
       owner: toCompressedId(a.owner),
       created_by: toCompressedId(a.created_by)
