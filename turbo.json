@@ -11,7 +11,7 @@
         "api/**",
         "public/build/**"
       ],
-      "dependsOn": ["^build", "^db:generate"]
+      "dependsOn": ["^build"]
     },
     "lint": {
       "dependsOn": ["^build"]
