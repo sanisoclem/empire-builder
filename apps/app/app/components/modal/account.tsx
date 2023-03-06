@@ -68,9 +68,8 @@ function AccountModal() {
         : undefined,
     resolver: zodResolver(formSchema)
   });
-  const values: unknown = useWatch({ control });
-
-  function handleSave() {
+  
+  function handleSave(values: unknown) {
     const parsed = formSchema.parse(values);
     if ('currencyObj' in parsed) {
       fetcher.submit(

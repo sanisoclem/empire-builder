@@ -46,7 +46,7 @@ export default function Sidebar({ workspaceId, className, version, ...props }: S
       icon: <HomeModernIcon className="h-6 w-6" />
     },
     {
-      href: ROUTES.workspace(workspaceId).budget.manage,
+      href: ROUTES.workspace(workspaceId).bucket.budget,
       label: 'Budget',
       icon: <CalculatorIcon className="h-6 w-6" />
     }

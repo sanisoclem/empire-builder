@@ -52,12 +52,12 @@ export const ROUTES = route('/', {
       transactions: '',
       update: 'update'
     }),
-    createCategory: 'c/create',
-    category: parameterizedRoute((categoryId) => `c/${categoryId}/`, {
-      update: 'update'
-    }),
-    budget: route('b/', {
-      manage: '',
+    bucket: route('b/', {
+      budget: '',
+      create: 'create',
+      item: parameterizedRoute((bucketId) => `${bucketId}/`, {
+        update: 'update'
+      })
     }),
     stock:  route('s/', {
       manage: '',

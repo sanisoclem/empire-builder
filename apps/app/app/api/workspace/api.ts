@@ -185,28 +185,24 @@ export class WorkspaceClient {
     });
   }
 
-  async createBucket(
-    workspaceId: string,
-    name: string,
-    category: string | null
-  ) {
+  async createBucket(workspaceId: string, name: string, category: string | null) {
     const { customClaims } = await requireOnboarded(this.args);
     if (!customClaims.workspaces.includes(workspaceId))
       throw new Response('Unauthorized', { status: 403 });
 
     const { id } = await this.dbClient.exec((c) =>
       c.bucket.create({
-        data:{
+        data: {
           name,
           category,
-          workspace_id: workspaceId
+          workspace_id: fromCompressedId(workspaceId)
         }
       })
     );
 
     return id;
   }
-  
+
   async getBucketBalances(workspaceId: string) {
     const { customClaims } = await requireOnboarded(this.args);
     if (!customClaims.workspaces.includes(workspaceId))
