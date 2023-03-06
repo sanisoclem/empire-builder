@@ -14,6 +14,7 @@ const loaderSchema = z.object({
     z.object({
       id: z.number(),
       name: z.string(),
+      order: z.number().nullable(),
       category: z.string().nullable()
     })
   )
@@ -33,26 +34,15 @@ export default function Accounts() {
   const { workspaceId } = useRouteData(workspaceRouteData);
   const { buckets } = useLoaderDataStrict(loaderSchema);
   const { newBucket } = useModal();
-  const bucketDict = buckets
+  const mappedBuckets = buckets
     .map((b) => ({
       bucketId: b.id,
       name: b.name,
       spent: 0,
       budgeted: 0,
-      category: b.category
-    }))
-    .reduce((acc, b) => {
-      if (b.category === null || b.category.trim() === '') {
-        return {
-          ...acc,
-          ['']: [...(acc[''] ?? []), b]
-        };
-      }
-      return {
-        ...acc,
-        [b.category]: [...(acc[b.category] ?? []), b]
-      };
-    }, {} as (typeof BudgetList extends (a: infer A) => infer _ ? A : never)['buckets']);
+      category: b.category ?? '',
+      index: b.order ?? 0
+    }));
 
   const handleNewBucket = () => newBucket(workspaceId);
   return (
@@ -62,7 +52,7 @@ export default function Accounts() {
         <Button onClick={handleNewBucket}>New Income/Expense</Button>
       </nav>
       <div className="h-[calc(100vh-10rem)] w-full overflow-auto">
-        <BudgetList currency="AUD" precision={2} buckets={bucketDict} />
+        <BudgetList workspaceId={workspaceId} currency="AUD" precision={2} buckets={mappedBuckets} />
       </div>
     </div>
   );

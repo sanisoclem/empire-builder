@@ -55,6 +55,7 @@ export const ROUTES = route('/', {
     bucket: route('b/', {
       budget: '',
       create: 'create',
+      organize: 'organize',
       item: parameterizedRoute((bucketId) => `${bucketId}/`, {
         update: 'update'
       })

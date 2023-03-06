@@ -216,4 +216,31 @@ export class WorkspaceClient {
       }
     });
   }
+  async organizeBuckets(
+    workspaceId: string,
+    buckets: Array<{ id: number; category: string | null; order: number }>
+  ) {
+    const { customClaims } = await requireOnboarded(this.args);
+    if (!customClaims.workspaces.includes(workspaceId))
+      throw new Response('Unauthorized', { status: 403 });
+
+    await this.dbClient.exec((c) =>
+      c.$transaction(
+        buckets.map((b) =>
+          c.bucket.update({
+            where: {
+              workspace_id_id: {
+                id: b.id,
+                workspace_id: fromCompressedId(workspaceId)
+              }
+            },
+            data: {
+              category: b.category,
+              order: b.order
+            }
+          })
+        )
+      )
+    );
+  }
 }
