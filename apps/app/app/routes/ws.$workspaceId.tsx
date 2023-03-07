@@ -7,7 +7,7 @@ import { ROUTES, ROUTE_DEFS } from '~/routes';
 import { AuthClient, requireOnboarded } from '~api/auth';
 import { requireWorkspaceId } from '~api/policy.server';
 import { WorkspaceClient } from '~api/workspace/api';
-import { Sidebar, Topbar } from '~components';
+import { Loader, Sidebar, Topbar } from '~components';
 import { makeRouteData, useLoaderDataStrict } from '~hooks';
 
 const loaderSchema = z.object({
@@ -58,7 +58,6 @@ export default function LedgerLayout() {
         <Sidebar workspaceId={workspaceId} className="flex-none" version={version} />
         <div className="flex flex-1 flex-col items-stretch bg-stone-200 transition-colors dark:bg-stone-900 dark:text-white">
           <Topbar user={user} mode={mode} className="flex-none shadow" workspaces={workspaces} />
-          {/* <BreadcrumsBar breadcrumbs={bc} className="" /> */}
           <div className="relative flex-1 overflow-y-auto">
             <Transition
               show={transition.state === 'loading'}
@@ -71,26 +70,7 @@ export default function LedgerLayout() {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <svg
-                className="-ml-1 mr-3 h-5 w-5 animate-spin text-stone-900"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
+              <Loader />
             </Transition>
             <Transition
               show={transition.state !== 'loading'}

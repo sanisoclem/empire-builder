@@ -1,5 +1,4 @@
 import { DataFunctionArgs } from '@remix-run/server-runtime';
-import { Suspense } from 'react';
 import { z } from 'zod';
 import { requireWorkspaceId } from '~api/policy.server';
 import { WorkspaceClient } from '~api/workspace/api';
@@ -50,14 +49,12 @@ export default function Accounts() {
         <Button onClick={handleNewBucket}>New Income/Expense</Button>
       </nav>
       <div className="h-[calc(100vh-10rem)] w-full overflow-auto">
-        <Suspense fallback={<div>Loading...</div>}>
-          <BudgetList
-            workspaceId={workspaceId}
-            currency="AUD"
-            precision={2}
-            buckets={mappedBuckets}
-          />
-        </Suspense>
+        <BudgetList
+          workspaceId={workspaceId}
+          currency="AUD"
+          precision={2}
+          buckets={mappedBuckets}
+        />
       </div>
     </div>
   );
