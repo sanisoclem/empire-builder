@@ -52,7 +52,7 @@ export default function Accounts() {
         <Button onClick={handleNewBucket}>New Income/Expense</Button>
       </nav>
       <div className="h-[calc(100vh-10rem)] w-full overflow-auto">
-        <BudgetList workspaceId={workspaceId} currency="AUD" precision={2} buckets={mappedBuckets} />
+        {/* <BudgetList workspaceId={workspaceId} currency="AUD" precision={2} buckets={mappedBuckets} /> */}
       </div>
     </div>
   );
