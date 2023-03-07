@@ -3,7 +3,6 @@ import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from '@re
 import { ClerkApp, ClerkCatchBoundary } from '@clerk/remix';
 import { rootAuthLoader } from '@clerk/remix/ssr.server';
 import styles from '~/tailwind.css';
-import { Analytics } from '@vercel/analytics/react';
 import { useTheme } from '~hooks';
 import { Modals } from '~components';
 
@@ -54,7 +53,7 @@ function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
-        <Analytics />
+        {/* <Analytics /> */}
       </body>
     </html>
   );

@@ -11,7 +11,7 @@ export class DbClient<T extends Prisma.PrismaClientOptions = Prisma.PrismaClient
     await this.client.$connect();
     try {
       return await fn(this.client);
-    } finally { 
+    } finally {
       await this.client.$disconnect();
     }
   }
