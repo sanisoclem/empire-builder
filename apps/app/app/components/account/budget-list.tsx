@@ -1,6 +1,6 @@
 import { useFetcher } from '@remix-run/react';
 import type { Identifier, XYCoord } from 'dnd-core';
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { ROUTES } from '~/routes';
@@ -236,57 +236,55 @@ export default function BudgetList({ workspaceId, currency, precision, buckets }
   }, [buckets]);
   return (
     <>
-      <Suspense fallback={<div />}>
-        <DndProvider backend={HTML5Backend}>
-          <table className="relative min-w-full table-fixed divide-y divide-stone-200 dark:divide-stone-600">
-            <thead className="sticky top-0 bg-stone-100 uppercase dark:bg-stone-700">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-4 py-2 text-left text-xs font-medium uppercase text-stone-500 dark:text-stone-400"
-                >
-                  Name
-                </th>
-                <th
-                  scope="col"
-                  className="whitespace-nowrap px-4 py-2 text-left text-xs font-medium uppercase text-stone-500 dark:text-stone-400"
-                >
-                  Spent
-                </th>
-                <th
-                  scope="col"
-                  className="whitespace-nowrap px-4 py-2 text-left text-xs font-medium uppercase text-stone-500 dark:text-stone-400"
-                >
-                  Budgeted
-                </th>
+      <DndProvider backend={HTML5Backend}>
+        <table className="relative min-w-full table-fixed divide-y divide-stone-200 dark:divide-stone-600">
+          <thead className="sticky top-0 bg-stone-100 uppercase dark:bg-stone-700">
+            <tr>
+              <th
+                scope="col"
+                className="px-4 py-2 text-left text-xs font-medium uppercase text-stone-500 dark:text-stone-400"
+              >
+                Name
+              </th>
+              <th
+                scope="col"
+                className="whitespace-nowrap px-4 py-2 text-left text-xs font-medium uppercase text-stone-500 dark:text-stone-400"
+              >
+                Spent
+              </th>
+              <th
+                scope="col"
+                className="whitespace-nowrap px-4 py-2 text-left text-xs font-medium uppercase text-stone-500 dark:text-stone-400"
+              >
+                Budgeted
+              </th>
+            </tr>
+          </thead>
+          {bucketCategories.map((cat, i1) => (
+            <tbody key={cat.category} className="divide-y divide-stone-200 dark:divide-stone-700">
+              <tr className="bg-stone-100/50 hover:bg-stone-100 dark:bg-stone-900/40 dark:hover:bg-stone-700">
+                <td className="w-full whitespace-nowrap px-4 py-2  text-base font-semibold text-stone-500 dark:text-stone-200">
+                  {cat.category}
+                </td>
+                <td className="whitespace-nowrap px-4 py-2 font-mono text-base font-semibold text-stone-500">
+                  {cat.spent}
+                </td>
+                <td className="whitespace-nowrap px-4 py-2 font-mono text-base font-semibold text-stone-500">
+                  {cat.budgeted}
+                </td>
               </tr>
-            </thead>
-            {bucketCategories.map((cat, i1) => (
-              <tbody key={cat.category} className="divide-y divide-stone-200 dark:divide-stone-700">
-                <tr className="bg-stone-100/50 hover:bg-stone-100 dark:bg-stone-900/40 dark:hover:bg-stone-700">
-                  <td className="w-full whitespace-nowrap px-4 py-2  text-base font-semibold text-stone-500 dark:text-stone-200">
-                    {cat.category}
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-2 font-mono text-base font-semibold text-stone-500">
-                    {cat.spent}
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-2 font-mono text-base font-semibold text-stone-500">
-                    {cat.budgeted}
-                  </td>
-                </tr>
-                {cat.buckets.map((item, i2) => (
-                  <BudgetListItem
-                    key={item.bucketId}
-                    index={i1 * 10000 + i2}
-                    {...item}
-                    moveCard={moveCard}
-                  />
-                ))}
-              </tbody>
-            ))}
-          </table>
-        </DndProvider>
-      </Suspense>
+              {cat.buckets.map((item, i2) => (
+                <BudgetListItem
+                  key={item.bucketId}
+                  index={i1 * 10000 + i2}
+                  {...item}
+                  moveCard={moveCard}
+                />
+              ))}
+            </tbody>
+          ))}
+        </table>
+      </DndProvider>
     </>
   );
 }
