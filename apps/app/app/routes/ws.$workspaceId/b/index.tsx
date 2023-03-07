@@ -2,7 +2,7 @@ import { DataFunctionArgs } from '@remix-run/server-runtime';
 import { z } from 'zod';
 import { requireWorkspaceId } from '~api/policy.server';
 import { WorkspaceClient } from '~api/workspace/api';
-import { Button, PageHeader } from '~components';
+import { Button, ClientOnly, Loader, PageHeader } from '~components';
 import BudgetList from '~components/account/budget-list';
 import { useLoaderDataStrict, useModal, useRouteData } from '~hooks';
 import { workspaceRouteData } from '../../ws.$workspaceId';
@@ -49,12 +49,22 @@ export default function Accounts() {
         <Button onClick={handleNewBucket}>New Income/Expense</Button>
       </nav>
       <div className="h-[calc(100vh-10rem)] w-full overflow-auto">
-        <BudgetList
-          workspaceId={workspaceId}
-          currency="AUD"
-          precision={2}
-          buckets={mappedBuckets}
-        />
+        <ClientOnly
+          fallback={
+            <div className="flex h-full w-full items-center justify-center">
+              <Loader />
+            </div>
+          }
+        >
+          {() => (
+            <BudgetList
+              workspaceId={workspaceId}
+              currency="AUD"
+              precision={2}
+              buckets={mappedBuckets}
+            />
+          )}
+        </ClientOnly>
       </div>
     </div>
   );
