@@ -46,7 +46,7 @@ export default function Accounts() {
 
   const handleNewBucket = () => newBucket(workspaceId);
   return (
-    <div className="w-full self-stretch bg-white dark:bg-stone-900">
+    <div className="w-full self-stretch bg-white bg-indigo-500 dark:bg-stone-900">
       <nav className="flex h-24 items-center justify-between px-4 py-6">
         <PageHeader>Budget</PageHeader>
         <Button onClick={handleNewBucket}>New Income/Expense</Button>
