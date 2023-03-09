@@ -4,12 +4,13 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import React, { Fragment, useState } from 'react';
 import type { ControllerRenderProps } from 'react-hook-form';
 
-type Props = {
-  choices: Choice[];
+type Props<T extends Choice> = {
+  choices: Array<T>;
   className?: string;
   placeholder?: string;
   label?: string;
   errors?: Record<string, { message?: string } | undefined>;
+  variant?: 'sm' | 'base';
 } & Partial<ControllerRenderProps>;
 
 interface Choice {
@@ -18,9 +19,9 @@ interface Choice {
   category: string;
 }
 
-export default React.forwardRef<HTMLInputElement, Props>(function InputCategoryCombo(
-  { choices, className, label, value, onChange, name, errors, ...props }: Props,
-  ref?
+function InputCategoryCombo<T extends Choice>(
+  { choices, className, label, value, onChange, name, errors, variant, ...props }: Props<T>,
+  ref?: React.ForwardedRef<HTMLInputElement>
 ) {
   const [query, setQuery] = useState('');
 
@@ -48,17 +49,15 @@ export default React.forwardRef<HTMLInputElement, Props>(function InputCategoryC
     <Combobox defaultValue={value} onChange={onChange} refName={name}>
       <div className={`relative ${className ?? ''}`}>
         <div className={`space-y-2 ${className ?? ''}`}>
-          <label
-            className={`${
-              !!label ?? true ? 'block text-sm font-medium text-stone-700' : 'sr-only'
-            }`}
-          >
-            {label}
-          </label>
+          {(!!label ?? true) && (
+            <label className="block text-sm font-medium text-stone-700">{label}</label>
+          )}
 
           <div className="relative w-full cursor-default overflow-hidden rounded-md border border-stone-400 focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500">
             <Combobox.Input
-              className="w-full border-none bg-stone-50 py-2 pl-3 pr-10 text-sm leading-5 text-stone-600 focus:bg-white focus:text-stone-900 focus:ring-0 dark:bg-stone-700 dark:text-stone-400 dark:focus:text-stone-200"
+              ref={ref}
+              data-variant={variant}
+              className="w-full border-none bg-stone-50 py-2 pl-3 pr-10 text-sm leading-5 text-stone-600 focus:bg-white focus:text-stone-900 focus:ring-0 data-[variant=sm]:p-1 dark:bg-stone-700 dark:text-stone-400 dark:placeholder:text-stone-400 dark:focus:text-stone-200 "
               displayValue={(choice: Choice) => choice?.name}
               onChange={(event) => setQuery(event.target.value)}
               {...props}
@@ -84,7 +83,7 @@ export default React.forwardRef<HTMLInputElement, Props>(function InputCategoryC
               <div className="relative cursor-default select-none py-1 px-2">Nothing found.</div>
             ) : (
               transformedChoices.map((cat) => (
-                <div>
+                <div key={cat.name}>
                   <div className="cursor-default bg-stone-200 px-2 py-1 dark:bg-stone-800">
                     {cat.name}
                   </div>
@@ -94,9 +93,7 @@ export default React.forwardRef<HTMLInputElement, Props>(function InputCategoryC
                         key={choice.id}
                         className={({ active }) =>
                           `relative cursor-default select-none py-1 pl-6 pr-2 ${
-                            active
-                              ? 'text-white bg-sky-600 '
-                              : 'text-stone-900 dark:text-stone-200'
+                            active ? 'bg-sky-600 text-white ' : 'text-stone-900 dark:text-stone-200'
                           }`
                         }
                         value={choice}
@@ -113,7 +110,7 @@ export default React.forwardRef<HTMLInputElement, Props>(function InputCategoryC
                             {selected ? (
                               <span
                                 className={`absolute inset-y-0 left-0 flex items-center pl-1 ${
-                                  active ? 'text-white' : 'text-indigo-600'
+                                  active ? 'text-white' : 'text-sky-600 dark:text-stone-200'
                                 }`}
                               >
                                 <CheckIcon className="h-4 w-4" aria-hidden="true" />
@@ -132,4 +129,6 @@ export default React.forwardRef<HTMLInputElement, Props>(function InputCategoryC
       </div>
     </Combobox>
   );
-});
+}
+
+export default React.forwardRef(InputCategoryCombo);
