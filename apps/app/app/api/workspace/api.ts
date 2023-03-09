@@ -2,6 +2,7 @@ import { AuthClient, requireOnboarded } from '~api/auth';
 import { fromCompressedId, genCompressedId, toCompressedId } from '~api/id';
 import { DbClient } from 'db-totality';
 import { DataFunctionArgs } from '@remix-run/server-runtime';
+import { custom, date, z } from 'zod';
 
 interface OnboardingRequest {
   userId: string;
@@ -12,6 +13,54 @@ interface OnboardingResult {
   userId: string;
   workspaceId: string;
 }
+
+const ledgerBalanceSchema = z.object({
+  accounts: z.record(z.number()),
+  buckets: z.record(z.record(z.number())),
+  floating: z.record(z.number())
+});
+
+const addAccountBalance = (
+  bal: z.infer<typeof ledgerBalanceSchema>,
+  accountId: string,
+  delta: number
+) => {
+  if (accountId in bal.accounts) {
+    bal.accounts[accountId] += delta;
+  } else {
+    bal.accounts[accountId] = delta;
+  }
+  return bal;
+};
+const addBucketBalance = (
+  bal: z.infer<typeof ledgerBalanceSchema>,
+  bucketId: string,
+  currency: string,
+  delta: number
+) => {
+  if (bucketId in bal.buckets) {
+    if (currency in bal.buckets[bucketId]) {
+      bal.buckets[bucketId][currency] += delta;
+    } else {
+      bal.buckets[bucketId][currency] = delta;
+    }
+  } else {
+    bal.buckets[bucketId] = { [currency]: delta };
+  }
+  return bal;
+};
+const addFloatingBalance = (
+  bal: z.infer<typeof ledgerBalanceSchema>,
+  currency: string,
+  delta: number
+) => {
+  if (currency in bal.floating) {
+    bal.floating[currency] += delta;
+  } else {
+    bal.floating[currency] = delta;
+  }
+  return bal;
+};
 
 export class WorkspaceClient {
   private dbClient: DbClient;
@@ -242,5 +291,107 @@ export class WorkspaceClient {
         )
       )
     );
+  }
+
+  async postTransaction(
+    workspaceId: string,
+    txn: {
+      accountId: number;
+      date: Date;
+      note: string;
+      data: NonEmptyArray<
+        | {
+            type: 'draft';
+            amount: number;
+          }
+        | {
+            type: 'transfer';
+            otherAccountId: number;
+            otherAmount: number | null;
+            amount: number;
+          }
+        | {
+            type: 'external';
+            bucketId: number;
+            amount: number;
+            payee: string;
+          }
+      >;
+    }
+  ) {
+    const { customClaims } = await requireOnboarded(this.args);
+    if (!customClaims.workspaces.includes(workspaceId))
+      throw new Response('Unauthorized', { status: 403 });
+    // find latest balance
+    // find account
+    // find linked account/bucket
+    // calculate new balance
+    // supersede balance, post new balance and txn
+
+    this.dbClient.client.$transaction(async (c) => {
+      const latestBalance = await c.balance.findFirstOrThrow({
+        where: {
+          workspace_id: workspaceId,
+          superseded_by: null
+        }
+      });
+      const account = await c.account.findUniqueOrThrow({
+        where: {
+          workspace_id_id: {
+            id: txn.accountId,
+            workspace_id: workspaceId
+          }
+        }
+      });
+      const bal = ledgerBalanceSchema.parse(latestBalance.ledger_balance);
+
+      txn.data.forEach((d) => {
+        switch (d.type) {
+          case 'draft':
+            addAccountBalance(bal, txn.accountId.toString(), d.amount);
+            addFloatingBalance(bal, account.currency_id, d.amount * -1);
+            break;
+          case 'external':
+            addAccountBalance(bal, txn.accountId.toString(), d.amount);
+            addBucketBalance(bal, d.bucketId.toString(), account.currency_id, d.amount * -1);
+            break;
+          case 'transfer':
+            addAccountBalance(bal, txn.accountId.toString(), d.amount);
+            addAccountBalance(bal, d.otherAccountId.toString(), d.otherAmount ?? d.amount);
+            break;
+        }
+      });
+      const { id } = await c.balance.create({
+        data: {
+          workspace_id: workspaceId,
+          budget_balance: latestBalance.budget_balance ?? {},
+          ledger_balance: bal,
+          superseded_by: null
+        }
+      });
+      await c.balance.update({
+        where: {
+          workspace_id_id: {
+            id: latestBalance.id,
+            workspace_id: workspaceId
+          }
+        },
+        data: {
+          superseded_by: id
+        }
+      });
+      await c.transaction.create({
+        data: {
+          create_at: new Date(),
+          created_by: fromCompressedId(customClaims.appUserId),
+          workspace_id: workspaceId,
+          date: txn.date,
+          notes: txn.note,
+          balance: id,
+          data: txn.data,
+          superseded_by: null
+        }
+      });
+    });
   }
 }

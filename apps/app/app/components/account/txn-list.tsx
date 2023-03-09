@@ -283,6 +283,7 @@ export default function TxnList({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   });
+  const account = accounts.find((a) => a.id === accountId)!;
   const { handleSubmit, reset } = form;
   const categories = [
     ...accounts.map((a) => ({
@@ -399,12 +400,12 @@ export default function TxnList({
             </tr>
           </thead>
           {editMode && editTxnId === null && (
-            <TxnEdit categories={categories} onCancel={onCancel} />
+            <TxnEdit currency={account.currency} categories={categories} onCancel={onCancel} />
           )}
           {txns.map((txn) => (
             <Fragment key={txn.txnId}>
               {editMode && editTxnId === txn.txnId && (
-                <TxnEdit categories={categories} onCancel={onCancel} />
+                <TxnEdit currency={account.currency} categories={categories} onCancel={onCancel} />
               )}
               {!editMode || editTxnId !== txn.txnId}
               <TxnRow accounts={accounts} buckets={buckets} txn={txn} />
