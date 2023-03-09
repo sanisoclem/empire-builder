@@ -39,20 +39,20 @@ export default React.forwardRef<HTMLInputElement, Props>(function InputCombo(
         <div className={`space-y-2 ${className ?? ''}`}>
           <label
             className={`${
-              !!label ?? true ? 'block text-sm font-medium text-stone-700' : 'sr-only'
+              !!label ?? true ? 'block text-sm font-medium text-stone-700 dark:text-stone-300' : 'sr-only'
             }`}
           >
             {label}
           </label>
 
-          <div className="relative w-full cursor-default overflow-hidden rounded-none border border-stone-300 bg-white focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
+          <div className="relative w-full cursor-default overflow-hidden rounded-md border border-stone-400 focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500">
             <Combobox.Input
-              className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-stone-900 focus:ring-0"
+              className="w-full border-none bg-stone-50 py-2 pl-3 pr-10 text-sm leading-5 text-stone-600 focus:bg-white focus:text-stone-900 focus:ring-0 dark:bg-stone-700 dark:text-stone-400 dark:focus:text-stone-200"
               displayValue={(choice: Choice) => choice?.name}
               onChange={(event) => setQuery(event.target.value)}
               {...props}
             />
-            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
+            <Combobox.Button className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white text-base text-stone-700 shadow-lg ring-1 ring-stone-400 ring-opacity-5 focus:outline-none dark:bg-stone-700 dark:text-stone-400 sm:text-sm">
               <ChevronUpDownIcon className="h-5 w-5 text-stone-400" aria-hidden="true" />
             </Combobox.Button>
           </div>
@@ -68,18 +68,16 @@ export default React.forwardRef<HTMLInputElement, Props>(function InputCombo(
           leaveTo="opacity-0"
           afterLeave={() => setQuery('')}
         >
-          <Combobox.Options className="absolute mt-1 max-h-60 z-20 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+          <Combobox.Options className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white text-base text-stone-700 shadow-lg ring-1 ring-stone-400 ring-opacity-5 focus:outline-none dark:bg-stone-700 dark:text-stone-400 sm:text-sm">
             {filtered.length === 0 && query !== '' ? (
-              <div className="relative cursor-default select-none py-2 px-4 text-stone-700">
-                Nothing found.
-              </div>
+              <div className="relative cursor-default select-none py-2 px-4">Nothing found.</div>
             ) : (
               filtered.map((choice) => (
                 <Combobox.Option
                   key={choice.id}
                   className={({ active }) =>
                     `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                      active ? 'bg-indigo-600 text-white' : 'text-stone-900'
+                      active ? 'bg-sky-600 text-white ' : 'text-stone-900 dark:text-stone-200'
                     }`
                   }
                   value={choice}

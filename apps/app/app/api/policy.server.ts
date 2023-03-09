@@ -4,6 +4,12 @@ import { z } from 'zod';
 export const requireWorkspaceId = (params: Params) =>
   requireParameters(params, z.object({ workspaceId: z.string() })).workspaceId;
 
+export const requireAccountId = (params: Params) =>
+  requireParameters(
+    params,
+    z.object({ workspaceId: z.string(), accountId: z.string().transform(Number) })
+  );
+
 export const requireParameters = <T extends z.ZodTypeAny>(
   params: Params,
   schema: T

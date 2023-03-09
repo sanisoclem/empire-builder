@@ -46,11 +46,13 @@ export const ROUTES = route('/', {
   createWorkspace: 'create-workspace',
   workspace: parameterizedRoute((workspaceId) => `ws/${workspaceId}/`, {
     dashboard: 'dashboard',
-    createAccount: 'account/create',
-    accounts: 'a',
-    account: parameterizedRoute((accountId) => `a/${accountId}/`, {
-      transactions: '',
-      update: 'update'
+    account: route('a/', {
+      list: '',
+      create: 'create',
+      item: parameterizedRoute((accountId) => `${accountId}/`, {
+        transactions: '',
+        update: 'update'
+      })
     }),
     bucket: route('b/', {
       budget: '',

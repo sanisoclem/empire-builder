@@ -59,7 +59,7 @@ export default function Accounts() {
     editAccount({ ...account, notes: '' }, workspaceId);
   };
   const handleViewTransactions = (accountId: number) => {
-    navigate(ROUTES.workspace(workspaceId).account(accountId.toString()).transactions);
+    navigate(ROUTES.workspace(workspaceId).account.item(accountId.toString()).transactions);
   };
   return (
     <div className="w-full self-stretch bg-white dark:bg-stone-800">

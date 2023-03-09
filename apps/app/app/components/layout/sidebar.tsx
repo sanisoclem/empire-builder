@@ -31,7 +31,7 @@ export default function Sidebar({ workspaceId, className, version, ...props }: S
       icon: <ChartPieIcon className="h-6 w-6" />
     },
     {
-      href: ROUTES.workspace(workspaceId).accounts,
+      href: ROUTES.workspace(workspaceId).account.list,
       label: 'Accounts',
       icon: <RectangleStackIcon className="h-6 w-6" />
     },

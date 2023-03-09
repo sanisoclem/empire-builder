@@ -16,10 +16,14 @@ export default React.forwardRef<HTMLTextAreaElement, InputProps>(function Textar
   ref?
 ) {
   return (
-    <div className={` ${className ?? ''}`}>
+    <div className={` ${className ?? 'space-y-2'}`}>
       <label
         htmlFor={id}
-        className={`${showLabel ?? true ? 'block text-sm font-medium text-stone-700' : 'sr-only'}`}
+        className={`${
+          showLabel ?? true
+            ? 'block text-sm font-medium text-stone-700 dark:text-stone-300'
+            : 'sr-only'
+        }`}
       >
         {label}
       </label>
@@ -28,7 +32,7 @@ export default React.forwardRef<HTMLTextAreaElement, InputProps>(function Textar
         ref={ref}
         placeholder={placeholder}
         name={name}
-        className="block w-full rounded-none border-stone-300 focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-stone-100 sm:text-sm"
+        className="block w-full rounded-md border-stone-400 bg-stone-50 text-stone-600 focus:border-sky-500 focus:bg-white focus:text-stone-900 focus:ring-sky-500 dark:bg-stone-700 dark:text-stone-400 dark:focus:text-stone-200 sm:text-sm"
         {...props}
       />
       {errors && errors[name!]?.message && <FormError>{errors[name!]?.message}</FormError>}

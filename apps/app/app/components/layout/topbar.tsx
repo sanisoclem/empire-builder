@@ -94,7 +94,7 @@ export default function Topbar({ className, mode, user, workspaces, ...props }: 
               </div>
             </Popover.Panel>
           </Transition>
-          <Popover.Overlay className="fixed inset-0 z-10 transition-all bg-black opacity-30" />
+          <Popover.Overlay className="fixed inset-0 z-10 transition-all bg-black/25 backdrop-blur" />
         </Popover>
         <UserButton afterSignOutUrl={ROUTES.home} />
       </div>

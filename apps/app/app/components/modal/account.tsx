@@ -80,7 +80,7 @@ function AccountModal() {
           notes: parsed.notes ?? ''
         },
         {
-          action: ROUTES.workspace(state.workspaceId).createAccount,
+          action: ROUTES.workspace(state.workspaceId).account.create,
           method: 'post'
         }
       );
@@ -92,7 +92,7 @@ function AccountModal() {
           notes: parsed.notes ?? ''
         },
         {
-          action: ROUTES.workspace(state.workspaceId).account(parsed.id.toString()).update,
+          action: ROUTES.workspace(state.workspaceId).account.item(parsed.id.toString()).update,
           method: 'post'
         }
       );

@@ -5,7 +5,6 @@ import {
   MinusIcon,
   PlusIcon
 } from '@heroicons/react/20/solid';
-import { InputCheck } from '~components/form';
 
 type Props = {
   accounts: Array<{
