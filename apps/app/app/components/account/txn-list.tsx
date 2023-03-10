@@ -1,41 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Fragment, useEffect } from 'react';
-import {
-  Controller,
-  FormProvider,
-  useFieldArray,
-  useForm,
-  useFormContext,
-  useWatch
-} from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Button, InputCategoryCombo } from '~components';
-import Input from '~components/form/input';
-import Textarea from '~components/form/textarea';
+import { formSchema } from './txn-form-schema';
+import TxnRow from './txn-row';
+import TxnEdit from './txn-row-edit';
 
-type Txn = {
-  txnId: number;
-  date: Date;
-  notes: string;
-  data: NonEmptyArray<
-    | {
-        type: 'draft';
-        amount: number;
-      }
-    | {
-        type: 'transfer';
-        otherAccountId: number;
-        otherAmount: number;
-        amount: number;
-      }
-    | {
-        type: 'external';
-        bucketId: number;
-        amount: number;
-        payee: string;
-      }
-  >;
-};
 type Props = {
   workspaceId: string;
   accountId: number;
@@ -44,241 +14,26 @@ type Props = {
     name: string;
     precision: Number;
   }>;
-  accounts: Array<{
-    id: number;
-    name: string;
-    currency: string;
-  }>;
-  buckets: Array<{
-    id: number;
-    name: string;
-    category: string | null;
-  }>;
+  accounts: FirstParam<typeof TxnRow>['accounts'];
+  buckets: FirstParam<typeof TxnRow>['buckets'];
   editMode: boolean;
   editTxnId: number | null;
-  txns: Txn[];
+  txns: Array<FirstParam<typeof TxnRow>['txn']>;
+  onRowEdit?: (v: FirstParam<typeof TxnRow>['txn']) => void;
+  onSubmit?: (v: z.infer<typeof formSchema>) => void;
   onCancel?: () => void;
 };
-
-type TxnRowProps = {
-  accounts: Props['accounts'];
-  buckets: Props['buckets'];
-  txn: WithNullable<Txn, 'txnId'>;
-};
-
-function TxnRow({ accounts, buckets, txn }: TxnRowProps) {
-  return (
-    <tbody className="group">
-      {txn.data.map((d, i) => (
-        <tr
-          key={i}
-          className="h-1 bg-white group-hover:bg-stone-100 dark:divide-stone-700 dark:bg-stone-800 dark:group-hover:bg-stone-700"
-        >
-          {i === 0 && (
-            <td
-              rowSpan={txn.data.length}
-              className="h-full cursor-pointer whitespace-nowrap px-1 py-2 text-sm font-normal text-stone-500 dark:text-stone-400"
-            >
-              <div className="flex h-full flex-col items-stretch">
-                {txn.date.toLocaleDateString()}
-              </div>
-            </td>
-          )}
-          <td className="whitespace-nowrap px-1 py-2 font-medium text-stone-500">
-            {d.type === 'draft'
-              ? ''
-              : d.type === 'transfer'
-              ? d.amount > 0
-                ? `Transfer from: ${accounts.find((a) => a.id === d.otherAccountId)!.name}`
-                : `Transfer to: ${accounts.find((a) => a.id === d.otherAccountId)!.name}`
-              : `${buckets.find((a) => a.id === d.bucketId)!.category}: ${
-                  buckets.find((a) => a.id === d.bucketId)!.name
-                }`}
-          </td>
-          <td className="whitespace-nowrap px-1 py-2 font-medium text-stone-500">
-            {'payee' in d && d.payee}
-          </td>
-          {i === 0 && (
-            <td rowSpan={txn.data.length} className="h-full px-1 py-2 font-medium text-stone-500">
-              {txn.notes}
-            </td>
-          )}
-          <td className="whitespace-nowrap px-1 py-2 font-medium text-stone-500">
-            {d.type === 'transfer' &&
-              d.amount !== d.otherAccountId &&
-              (d.otherAccountId / Math.pow(10, 2)).toFixed(2)}
-          </td>
-          <td className="whitespace-nowrap px-1 py-2 font-medium text-stone-500">
-            {(d.amount / Math.pow(10, 2)).toFixed(2)}
-          </td>
-          {i === 0 && (
-            <td className="h-full whitespace-nowrap px-1 py-2 text-right font-medium text-stone-500">
-              <div className="flex h-full flex-col items-stretch">0.00</div>
-            </td>
-          )}
-        </tr>
-      ))}
-    </tbody>
-  );
-}
-
-type TxEditProps = {
-  currency: string;
-  categories: Array<{ id: string; name: string; category: string }>;
-  onCancel?: () => void;
-};
-
-function TxnEdit({ categories, onCancel, currency }: TxEditProps) {
-  const { control, register } = useFormContext<z.infer<typeof formSchema>>();
-  const { fields } = useFieldArray({ control, name: 'data' });
-  const data = useWatch({ control, name: 'data' });
-
-  return (
-    <tbody className="group">
-      {fields.map((f, i) => (
-        <tr
-          key={i}
-          className="h-1 bg-white group-hover:bg-stone-100 dark:divide-stone-700 dark:bg-stone-800 dark:group-hover:bg-stone-700"
-        >
-          {i === 0 && (
-            <td
-              rowSpan={fields.length}
-              className="h-full cursor-pointer whitespace-nowrap px-1 py-2 text-sm font-normal text-stone-500 dark:text-stone-400"
-            >
-              <div className="flex h-full flex-col items-stretch">
-                <Input type="date" variant="sm" {...register('date', { valueAsDate: true })} />
-              </div>
-            </td>
-          )}
-          <td className="whitespace-nowrap px-1 py-2 font-medium text-stone-500">
-            <Controller
-              name={`data.${i}.category`}
-              control={control}
-              render={({ field }) => (
-                <InputCategoryCombo
-                  variant="sm"
-                  {...field}
-                  placeholder="choose a category"
-                  choices={categories}
-                />
-              )}
-            />
-          </td>
-          <td className="whitespace-nowrap px-1 py-2 font-medium text-stone-500">
-            {data[i].category?.type === 'bucket' && (
-              <Input
-                placeholder="payee"
-                variant="sm"
-                type="text"
-                {...register(`data.${i}.payee`)}
-              />
-            )}
-          </td>
-          {i === 0 && (
-            <td rowSpan={fields.length} className="h-full px-1 py-2 font-medium text-stone-500">
-              <div className="flex h-full flex-col items-stretch">
-                <Textarea
-                  noresize={true}
-                  variant="sm"
-                  rows={1}
-                  placeholder="notes"
-                  {...register('notes')}
-                />
-              </div>
-            </td>
-          )}
-          <td className="whitespace-nowrap px-1 py-2 font-medium text-stone-500">
-            {(() => {
-              let d = data[i]!;
-              return (
-                d.category?.type === 'account' &&
-                d.category.currency !== currency && (
-                  <Input
-                    variant="sm"
-                    type="number"
-                    placeholder="other amount"
-                    {...register(`data.${i}.otherAmount`, { valueAsNumber: true })}
-                  />
-                )
-              );
-            })()}
-          </td>
-          <td className="whitespace-nowrap px-1 py-2 font-medium text-stone-500">
-            <Input
-              variant="sm"
-              type="number"
-              placeholder="amount"
-              {...register(`data.${i}.amount`, { valueAsNumber: true })}
-            />
-          </td>
-          <td></td>
-        </tr>
-      ))}
-      <tr>
-        <td colSpan={7} className="space-x-2 p-2 text-center">
-          <Button
-            type="button"
-            className="w-28 !p-1 text-center"
-            variant="neutral"
-            onClick={onCancel}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" className="w-28 !p-1 text-center">
-            Save
-          </Button>
-        </td>
-      </tr>
-    </tbody>
-  );
-}
-
-const formSchema = z.object({
-  date: z.date(),
-  notes: z.string(),
-  data: z.array(
-    z.union([
-      z.object({
-        category: z.object({
-          id: z.string(),
-          accountId: z.number(),
-          currency: z.string(),
-          name: z.string(),
-          category: z.string(),
-          type: z.literal('account')
-        }),
-        amount: z.number(),
-        otherAmount: z.number().nullable().optional()
-      }),
-      z.object({
-        category: z.object({
-          id: z.string(),
-          bucketId: z.number(),
-          name: z.string(),
-          category: z.string(),
-          type: z.literal('bucket')
-        }),
-        amount: z.number(),
-        payee: z.string()
-      }),
-      z.object({
-        category: z.null(),
-        amount: z.number()
-      })
-    ])
-  )
-});
 
 export default function TxnList({
-  workspaceId,
-  currencies,
   accountId,
   accounts,
   buckets,
   txns,
   editMode,
   editTxnId,
-  onCancel
+  onSubmit,
+  onCancel,
+  onRowEdit
 }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
@@ -304,8 +59,9 @@ export default function TxnList({
     }))
   ];
   const handleSubmitTxn = (e: unknown) => {
-    console.log(e);
+    onSubmit?.(formSchema.parse(e));
   };
+
   useEffect(() => {
     if (editMode) {
       if (editTxnId === null) {
@@ -317,7 +73,7 @@ export default function TxnList({
         if (txn !== undefined) {
           reset({
             date: txn.date,
-            notes: txn.notes,
+            notes: txn.notes ?? '',
             data: txn.data.map((d) =>
               d.type === 'draft'
                 ? { category: null, amount: d.amount }
@@ -408,8 +164,9 @@ export default function TxnList({
               {editMode && editTxnId === txn.txnId && (
                 <TxnEdit currency={account.currency} categories={categories} onCancel={onCancel} />
               )}
-              {!editMode || editTxnId !== txn.txnId}
-              <TxnRow accounts={accounts} buckets={buckets} txn={txn} />
+              {(!editMode || editTxnId !== txn.txnId) && (
+                <TxnRow onClick={onRowEdit} accounts={accounts} buckets={buckets} txn={txn} />
+              )}
             </Fragment>
           ))}
         </table>

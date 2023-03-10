@@ -154,8 +154,8 @@ export default function BudgetList({ workspaceId, currency, precision, buckets }
       submitJsonRequest(
         fetcher,
         ROUTES.workspace(workspaceId).bucket.organize,
+        organizeBudgetPayloadSchema,
         arg,
-        organizeBudgetPayloadSchema
       ),
     2000
   );

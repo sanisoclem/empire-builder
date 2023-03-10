@@ -2,7 +2,7 @@ import { AuthClient, requireOnboarded } from '~api/auth';
 import { fromCompressedId, genCompressedId, toCompressedId } from '~api/id';
 import { DbClient } from 'db-totality';
 import { DataFunctionArgs } from '@remix-run/server-runtime';
-import { custom, date, z } from 'zod';
+import { z } from 'zod';
 
 interface OnboardingRequest {
   userId: string;
@@ -13,12 +13,41 @@ interface OnboardingResult {
   userId: string;
   workspaceId: string;
 }
+const txnDataSchema = z
+  .union([
+    z.object({
+      accountId: z.number(),
+      type: z.literal('draft'),
+      amount: z.number().int()
+    }),
+    z.object({
+      type: z.literal('transfer'),
+      accountId: z.number(),
+      otherAccountId: z.number(),
+      otherAmount: z.number().int().nullable(),
+      amount: z.number().int()
+    }),
+    z.object({
+      accountId: z.number(),
+      type: z.literal('external'),
+      bucketId: z.number(),
+      amount: z.number().int(),
+      payee: z.string()
+    })
+  ])
+  .array()
+  .nonempty();
 
 const ledgerBalanceSchema = z.object({
   accounts: z.record(z.number()),
   buckets: z.record(z.record(z.number())),
   floating: z.record(z.number())
 });
+const blankLedgerBalance = {
+  accounts: {},
+  buckets: {},
+  floating: {}
+};
 
 const addAccountBalance = (
   bal: z.infer<typeof ledgerBalanceSchema>,
@@ -225,13 +254,27 @@ export class WorkspaceClient {
     if (!customClaims.workspaces.includes(workspaceId))
       throw new Response('Unauthorized', { status: 403 });
 
-    return await this.dbClient.client.account.findMany({
+    const accounts = await this.dbClient.client.account.findMany({
       where: {
         workspace_id: {
           equals: fromCompressedId(workspaceId)
         }
       }
     });
+
+    const balance = await this.dbClient.client.balance.findFirst({
+      where: {
+        workspace_id: fromCompressedId(workspaceId),
+        superseded_by: null
+      }
+    });
+
+    return [
+      accounts,
+      balance?.ledger_balance
+        ? ledgerBalanceSchema.parse(balance.ledger_balance)
+        : blankLedgerBalance
+    ] as const;
   }
 
   async createBucket(workspaceId: string, name: string, category: string | null) {
@@ -292,6 +335,40 @@ export class WorkspaceClient {
       )
     );
   }
+  async getTransactions(workspaceId: string, accountId: number) {
+    const { customClaims } = await requireOnboarded(this.args);
+    if (!customClaims.workspaces.includes(workspaceId))
+      throw new Response('Unauthorized', { status: 403 });
+
+    const txns = await this.dbClient.client.transaction.findMany({
+      where: {
+        AND: [
+          {
+            OR: [
+              {
+                data: {
+                  array_contains: [{ accountId: accountId }]
+                }
+              },
+              {
+                data: {
+                  array_contains: [{ accountId: accountId }]
+                }
+              }
+            ]
+          },
+          {
+            superseded_by: null
+          }
+        ]
+      }
+    });
+
+    return txns.map(t=> ({
+      ...t,
+      data: txnDataSchema.parse(t.data)
+    }))
+  }
 
   async postTransaction(
     workspaceId: string,
@@ -330,9 +407,9 @@ export class WorkspaceClient {
 
     this.dbClient.client.$transaction(
       async (c) => {
-        const latestBalance = await c.balance.findFirstOrThrow({
+        const latestBalance = await c.balance.findFirst({
           where: {
-            workspace_id: workspaceId,
+            workspace_id: fromCompressedId(workspaceId),
             superseded_by: null
           }
         });
@@ -340,11 +417,15 @@ export class WorkspaceClient {
           where: {
             workspace_id_id: {
               id: txn.accountId,
-              workspace_id: workspaceId
+              workspace_id: fromCompressedId(workspaceId)
             }
           }
         });
-        const bal = ledgerBalanceSchema.parse(latestBalance.ledger_balance);
+
+        const bal =
+          latestBalance === null
+            ? blankLedgerBalance
+            : ledgerBalanceSchema.parse(latestBalance.ledger_balance);
 
         txn.data.forEach((d) => {
           switch (d.type) {
@@ -364,32 +445,34 @@ export class WorkspaceClient {
         });
         const { id } = await c.balance.create({
           data: {
-            workspace_id: workspaceId,
-            budget_balance: latestBalance.budget_balance ?? {},
+            workspace_id: fromCompressedId(workspaceId),
+            budget_balance: latestBalance?.budget_balance ?? {},
             ledger_balance: bal,
             superseded_by: null
           }
         });
-        await c.balance.update({
-          where: {
-            workspace_id_id: {
-              id: latestBalance.id,
-              workspace_id: workspaceId
+        if (latestBalance !== null) {
+          await c.balance.update({
+            where: {
+              workspace_id_id: {
+                id: latestBalance.id,
+                workspace_id: fromCompressedId(workspaceId)
+              }
+            },
+            data: {
+              superseded_by: id
             }
-          },
-          data: {
-            superseded_by: id
-          }
-        });
+          });
+        }
         await c.transaction.create({
           data: {
             create_at: new Date(),
             created_by: fromCompressedId(customClaims.appUserId),
-            workspace_id: workspaceId,
+            workspace_id: fromCompressedId(workspaceId),
             date: txn.date,
             notes: txn.note,
             balance: id,
-            data: txn.data,
+            data: txnDataSchema.parse(txn.data.map((d) => ({ ...d, accountId: txn.accountId }))),
             superseded_by: null
           }
         });

@@ -102,7 +102,7 @@ model transaction {
   workspace_id              String       @db.Uuid
   date                      DateTime     @db.Date
   notes                     String?
-  data                      Json         @db.Json
+  data                      Json         @db.JsonB
   created_by                String       @db.Uuid
   create_at                 DateTime     @db.Date
   superseded_by             Int?
