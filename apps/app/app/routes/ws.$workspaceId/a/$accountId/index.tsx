@@ -80,11 +80,14 @@ export default function () {
   }, [fetcher.state, fetcher.type]);
 
   const handleSaveTxn = (t: FirstParam<FirstParam<typeof TxnList>['onSubmit']>) => {
+    if (!editMode.editing) return;
+
     submitJsonRequest(
       fetcher,
       ROUTES.workspace(workspaceId).account.item(accountId.toString()).postTransaction,
       postTxnPayloadSchema,
       {
+        txnId: editMode.editedId === null ? undefined : editMode.editedId,
         note: t.notes,
         date: t.date.toISOString(),
         data: mapNonEmpty(t.data, (d) => {

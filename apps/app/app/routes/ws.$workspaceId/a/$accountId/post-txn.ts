@@ -24,6 +24,7 @@ const txnDataSchema = z.union([
 ]);
 
 export const postTxnPayloadSchema = z.object({
+  txnId: z.number().optional(),
   date: z.string(),
   note: z.string().max(250),
   data: z.array(txnDataSchema).nonempty()
@@ -33,13 +34,20 @@ export const action: LoaderFunction = async (args) => {
   const { workspaceId, accountId } = requireAccountId(args.params);
   const wsClient = new WorkspaceClient(args);
   const payload = await getJsonRequest(args, postTxnPayloadSchema);
-  console.log(payload);
 
-  await wsClient.postTransaction(workspaceId, {
-    accountId: accountId,
-    ...payload,
-    date: new Date(payload.date)
-  });
+  if (payload.txnId === undefined) {
+    await wsClient.postTransaction(workspaceId, {
+      accountId: accountId,
+      ...payload,
+      date: new Date(payload.date)
+    });
+  } else {
+    await wsClient.updateTransaction(workspaceId, payload.txnId, {
+      accountId: accountId,
+      ...payload,
+      date: new Date(payload.date)
+    });
+  }
 
   return {};
 };
