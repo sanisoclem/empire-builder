@@ -1,15 +1,14 @@
-const colors = require("tailwindcss/colors");
+const colors = require('tailwindcss/colors');
 
 module.exports = {
   content: [
-    './src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'
-    ,'../../packages/ui/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'
+    './src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}',
+    '../../packages/ui/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'
   ],
   theme: {
     extend: {
-      colors: {
-      },
-    },
+      colors: {}
+    }
   },
-  plugins: [],
+  plugins: []
 };

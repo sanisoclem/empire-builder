@@ -2,20 +2,20 @@ import { Select } from '~components';
 
 export default function Dashboard() {
   return (
-    <div className="px-4 pt-6 w-full">
+    <div className="w-full px-4 pt-6">
       <div className="grid gap-4 xl:grid-cols-2 2xl:grid-cols-6">
-        <div className="p-4 bg-white border border-stone-200 rounded shadow-sm 2xl:col-span-4 dark:border-stone-700 sm:p-6 dark:bg-stone-800">
-          <div className="flex items-center justify-between mb-4">
+        <div className="rounded border border-stone-200 bg-white p-4 shadow-sm dark:border-stone-700 dark:bg-stone-800 sm:p-6 2xl:col-span-4">
+          <div className="mb-4 flex items-center justify-between">
             <div className="flex-shrink-0">
-              <span className="text-xl font-bold leading-none text-stone-900 sm:text-2xl dark:text-white">
+              <span className="text-xl font-bold leading-none text-stone-900 dark:text-white sm:text-2xl">
                 $435,675
               </span>
               <h3 className="text-base font-light text-stone-500 dark:text-stone-400">Net Worth</h3>
             </div>
-            <div className="flex items-center justify-end flex-1 text-base font-medium text-green-500 dark:text-green-400">
+            <div className="flex flex-1 items-center justify-end text-base font-medium text-green-500 dark:text-green-400">
               12.5%
               <svg
-                className="w-5 h-5"
+                className="h-5 w-5"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -29,7 +29,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="h-96">Chart Here</div>
-          <div className="flex items-center justify-between pt-3 mt-4 border-t border-stone-200 sm:pt-6 dark:border-stone-700">
+          <div className="mt-4 flex items-center justify-between border-t border-stone-200 pt-3 dark:border-stone-700 sm:pt-6">
             <div className="flex gap-x-2">
               <Select choices={['Last 7 Days']}></Select>
               <Select choices={['USD']}></Select>
@@ -37,11 +37,11 @@ export default function Dashboard() {
             <div className="flex-shrink-0">
               <a
                 href="#"
-                className="inline-flex items-center p-2 text-xs font-medium uppercase rounded text-primary-700 sm:text-sm hover:bg-stone-100 dark:text-primary-500 dark:hover:bg-stone-700"
+                className="text-primary-700 dark:text-primary-500 inline-flex items-center rounded p-2 text-xs font-medium uppercase hover:bg-stone-100 dark:hover:bg-stone-700 sm:text-sm"
               >
                 Net Worth Report
                 <svg
-                  className="w-4 h-4 ml-1"
+                  className="ml-1 h-4 w-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -59,8 +59,8 @@ export default function Dashboard() {
           </div>
         </div>
         {/*Tabs widget */}
-        <div className="p-4 bg-white border 2xl:col-span-2 border-stone-200 rounded shadow-sm dark:border-stone-700 sm:p-6 dark:bg-stone-800">
-          <h3 className="flex items-center mb-4 text-lg font-semibold text-stone-900 dark:text-white">
+        <div className="rounded border border-stone-200 bg-white p-4 shadow-sm dark:border-stone-700 dark:bg-stone-800 sm:p-6 2xl:col-span-2">
+          <h3 className="mb-4 flex items-center text-lg font-semibold text-stone-900 dark:text-white">
             Balance Sheet
             <button
               data-popover-target="popover-description"
@@ -68,7 +68,7 @@ export default function Dashboard() {
               type="button"
             >
               <svg
-                className="w-4 h-4 ml-2 text-stone-400 hover:text-stone-500"
+                className="ml-2 h-4 w-4 text-stone-400 hover:text-stone-500"
                 aria-hidden="true"
                 fill="currentColor"
                 viewBox="0 0 20 20"
@@ -84,7 +84,7 @@ export default function Dashboard() {
             </button>
           </h3>
           <ul
-            className="hidden text-sm font-medium text-center text-stone-500 divide-x divide-stone-200 rounded sm:flex dark:divide-stone-600 dark:text-stone-400"
+            className="hidden divide-x divide-stone-200 rounded text-center text-sm font-medium text-stone-500 dark:divide-stone-600 dark:text-stone-400 sm:flex"
             id="fullWidthTab"
             data-tabs-toggle="#fullWidthTabContent"
             role="tablist"
@@ -97,7 +97,7 @@ export default function Dashboard() {
                 role="tab"
                 aria-controls="faq"
                 aria-selected="true"
-                className="inline-block w-full p-4 rounded-tl-lg bg-stone-50 hover:bg-stone-100 focus:outline-none dark:bg-stone-700 dark:hover:bg-stone-600"
+                className="inline-block w-full rounded-tl-lg bg-stone-50 p-4 hover:bg-stone-100 focus:outline-none dark:bg-stone-700 dark:hover:bg-stone-600"
               >
                 Assets
               </button>
@@ -110,7 +110,7 @@ export default function Dashboard() {
                 role="tab"
                 aria-controls="about"
                 aria-selected="false"
-                className="inline-block w-full p-4 rounded-tr-lg bg-stone-50 hover:bg-stone-100 focus:outline-none dark:bg-stone-700 dark:hover:bg-stone-600"
+                className="inline-block w-full rounded-tr-lg bg-stone-50 p-4 hover:bg-stone-100 focus:outline-none dark:bg-stone-700 dark:hover:bg-stone-600"
               >
                 Liabilities
               </button>
@@ -118,16 +118,16 @@ export default function Dashboard() {
           </ul>
 
           {/* Card Footer */}
-          <div className="flex items-center justify-between pt-3 mt-5 border-t border-stone-200 sm:pt-6 dark:border-stone-700">
+          <div className="mt-5 flex items-center justify-between border-t border-stone-200 pt-3 dark:border-stone-700 sm:pt-6">
             <div></div>
             <div className="flex-shrink-0">
               <a
                 href="#"
-                className="inline-flex items-center p-2 text-xs font-medium uppercase rounded text-primary-700 sm:text-sm hover:bg-stone-100 dark:text-primary-500 dark:hover:bg-stone-700"
+                className="text-primary-700 dark:text-primary-500 inline-flex items-center rounded p-2 text-xs font-medium uppercase hover:bg-stone-100 dark:hover:bg-stone-700 sm:text-sm"
               >
                 Full Report
                 <svg
-                  className="w-4 h-4 ml-1"
+                  className="ml-1 h-4 w-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -145,17 +145,17 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      <div className="grid w-full grid-cols-1 gap-4 mt-4 xl:grid-cols-2 2xl:grid-cols-4">
-        <div className="items-center justify-between p-4 bg-white border border-stone-200 rounded shadow-sm sm:flex dark:border-stone-700 sm:p-6 dark:bg-stone-800">
+      <div className="mt-4 grid w-full grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-4">
+        <div className="items-center justify-between rounded border border-stone-200 bg-white p-4 shadow-sm dark:border-stone-700 dark:bg-stone-800 sm:flex sm:p-6">
           <div className="w-full">
             <h3 className="text-base font-normal text-stone-500 dark:text-stone-400">Cash Flow</h3>
-            <span className="text-2xl font-bold leading-none text-stone-900 sm:text-3xl dark:text-white">
+            <span className="text-2xl font-bold leading-none text-stone-900 dark:text-white sm:text-3xl">
               +2,340
             </span>
             <p className="flex items-center text-base font-normal text-stone-500 dark:text-stone-400">
-              <span className="flex items-center mr-1.5 text-sm text-green-500 dark:text-green-400">
+              <span className="mr-1.5 flex items-center text-sm text-green-500 dark:text-green-400">
                 <svg
-                  className="w-4 h-4"
+                  className="h-4 w-4"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg"
@@ -174,18 +174,18 @@ export default function Dashboard() {
           </div>
           <div className="w-full">Chart here</div>
         </div>
-        <div className="items-center justify-between p-4 bg-white border border-stone-200 rounded shadow-sm sm:flex dark:border-stone-700 sm:p-6 dark:bg-stone-800">
+        <div className="items-center justify-between rounded border border-stone-200 bg-white p-4 shadow-sm dark:border-stone-700 dark:bg-stone-800 sm:flex sm:p-6">
           <div className="w-full">
             <h3 className="text-base font-normal text-stone-500 dark:text-stone-400">
               Budget Prediction Power
             </h3>
-            <span className="text-2xl font-bold leading-none text-stone-900 sm:text-3xl dark:text-white">
+            <span className="text-2xl font-bold leading-none text-stone-900 dark:text-white sm:text-3xl">
               60 days
             </span>
             <p className="flex items-center text-base font-normal text-stone-500 dark:text-stone-400">
-              <span className="flex items-center mr-1.5 text-sm text-green-500 dark:text-green-400">
+              <span className="mr-1.5 flex items-center text-sm text-green-500 dark:text-green-400">
                 <svg
-                  className="w-4 h-4"
+                  className="h-4 w-4"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg"
@@ -204,43 +204,43 @@ export default function Dashboard() {
           </div>
           <div className="w-full">Chart here</div>
         </div>
-        <div className="p-4 bg-white border 2xl:col-span-2 border-stone-200 rounded shadow-sm dark:border-stone-700 sm:p-6 dark:bg-stone-800">
+        <div className="rounded border border-stone-200 bg-white p-4 shadow-sm dark:border-stone-700 dark:bg-stone-800 sm:p-6 2xl:col-span-2">
           <div className="w-full">
             <h3 className="mb-2 text-base font-normal text-stone-500 dark:text-stone-400">
               Top unplanned expenses
             </h3>
-            <div className="flex items-center mb-2">
+            <div className="mb-2 flex items-center">
               <div className="w-16 text-sm font-medium dark:text-white">Food</div>
-              <div className="w-full bg-stone-200 rounded-full h-2.5 dark:bg-stone-700">
+              <div className="h-2.5 w-full rounded-full bg-stone-200 dark:bg-stone-700">
                 <div
-                  className="bg-primary-600 h-2.5 rounded-full dark:bg-primary-500"
+                  className="bg-primary-600 dark:bg-primary-500 h-2.5 rounded-full"
                   style={{ width: '18%' }}
                 />
               </div>
             </div>
-            <div className="flex items-center mb-2">
+            <div className="mb-2 flex items-center">
               <div className="w-16 text-sm font-medium dark:text-white">Games</div>
-              <div className="w-full bg-stone-200 rounded-full h-2.5 dark:bg-stone-700">
+              <div className="h-2.5 w-full rounded-full bg-stone-200 dark:bg-stone-700">
                 <div
-                  className="bg-primary-600 h-2.5 rounded-full dark:bg-primary-500"
+                  className="bg-primary-600 dark:bg-primary-500 h-2.5 rounded-full"
                   style={{ width: '15%' }}
                 />
               </div>
             </div>
-            <div className="flex items-center mb-2">
+            <div className="mb-2 flex items-center">
               <div className="w-16 text-sm font-medium dark:text-white">Food</div>
-              <div className="w-full bg-stone-200 rounded-full h-2.5 dark:bg-stone-700">
+              <div className="h-2.5 w-full rounded-full bg-stone-200 dark:bg-stone-700">
                 <div
-                  className="bg-primary-600 h-2.5 rounded-full dark:bg-primary-500"
+                  className="bg-primary-600 dark:bg-primary-500 h-2.5 rounded-full"
                   style={{ width: '60%' }}
                 />
               </div>
             </div>
-            <div className="flex items-center mb-2">
+            <div className="mb-2 flex items-center">
               <div className="w-16 text-sm font-medium dark:text-white">Potatoes</div>
-              <div className="w-full bg-stone-200 rounded-full h-2.5 dark:bg-stone-700">
+              <div className="h-2.5 w-full rounded-full bg-stone-200 dark:bg-stone-700">
                 <div
-                  className="bg-primary-600 h-2.5 rounded-full dark:bg-primary-500"
+                  className="bg-primary-600 dark:bg-primary-500 h-2.5 rounded-full"
                   style={{ width: '30%' }}
                 />
               </div>
@@ -251,23 +251,23 @@ export default function Dashboard() {
       </div>
 
       {/* 2 columns */}
-      <div className="grid grid-cols-1 my-4 xl:grid-cols-2 xl:gap-4">
+      <div className="my-4 grid grid-cols-1 xl:grid-cols-2 xl:gap-4">
         {/* Activity Card */}
-        <div className="p-4 mb-4 bg-white border border-stone-200 rounded shadow-sm dark:border-stone-700 sm:p-6 dark:bg-stone-800 xl:mb-0">
-          <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 rounded border border-stone-200 bg-white p-4 shadow-sm dark:border-stone-700 dark:bg-stone-800 sm:p-6 xl:mb-0">
+          <div className="mb-4 flex items-center justify-between">
             <h3 className="text-lg font-semibold text-stone-900 dark:text-white">
               Latest Articles
             </h3>
             <a
               href="#"
-              className="inline-flex items-center p-2 text-sm font-medium rounded text-primary-700 hover:bg-stone-100 dark:text-primary-500 dark:hover:bg-stone-700"
+              className="text-primary-700 dark:text-primary-500 inline-flex items-center rounded p-2 text-sm font-medium hover:bg-stone-100 dark:hover:bg-stone-700"
             >
               View all
             </a>
           </div>
           <ol className="relative border-l border-stone-200 dark:border-stone-700">
             <li className="mb-10 ml-4">
-              <div className="absolute w-3 h-3 bg-stone-200 rounded-full mt-1.5 -left-1.5 border border-white dark:border-stone-800 dark:bg-stone-700" />
+              <div className="absolute -left-1.5 mt-1.5 h-3 w-3 rounded-full border border-white bg-stone-200 dark:border-stone-800 dark:bg-stone-700" />
               <time className="mb-1 text-sm font-normal leading-none text-stone-400 dark:text-stone-500">
                 April 2023
               </time>
@@ -282,11 +282,11 @@ export default function Dashboard() {
               </p>
               <a
                 href="#"
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-stone-900 bg-white border border-stone-200 rounded hover:bg-stone-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:outline-none focus:ring-stone-200 focus:text-primary-700 dark:bg-stone-800 dark:text-stone-400 dark:border-stone-600 dark:hover:text-white dark:hover:bg-stone-700 dark:focus:ring-stone-700"
+                className="hover:text-primary-700 focus:text-primary-700 inline-flex items-center rounded border border-stone-200 bg-white px-4 py-2 text-sm font-medium text-stone-900 hover:bg-stone-100 focus:z-10 focus:outline-none focus:ring-4 focus:ring-stone-200 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-white dark:focus:ring-stone-700"
               >
                 Learn more{' '}
                 <svg
-                  className="w-3 h-3 ml-2"
+                  className="ml-2 h-3 w-3"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg"
@@ -300,7 +300,7 @@ export default function Dashboard() {
               </a>
             </li>
             <li className="mb-10 ml-4">
-              <div className="absolute w-3 h-3 bg-stone-200 rounded-full mt-1.5 -left-1.5 border border-white dark:border-stone-800 dark:bg-stone-700" />
+              <div className="absolute -left-1.5 mt-1.5 h-3 w-3 rounded-full border border-white bg-stone-200 dark:border-stone-800 dark:bg-stone-700" />
               <time className="mb-1 text-sm font-normal leading-none text-stone-400 dark:text-stone-500">
                 March 2023
               </time>
@@ -317,11 +317,11 @@ export default function Dashboard() {
               </p>
               <a
                 href="https://flowbite.com/blocks/"
-                className="inline-flex items-center text-xs font-medium hover:underline text-primary-700 sm:text-sm dark:text-primary-500"
+                className="text-primary-700 dark:text-primary-500 inline-flex items-center text-xs font-medium hover:underline sm:text-sm"
               >
                 Potato
                 <svg
-                  className="w-4 h-4 ml-1"
+                  className="ml-1 h-4 w-4"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth={2}
@@ -334,7 +334,7 @@ export default function Dashboard() {
               </a>
             </li>
             <li className="mb-10 ml-4">
-              <div className="absolute w-3 h-3 bg-stone-200 rounded-full mt-1.5 -left-1.5 border border-white dark:border-stone-800 dark:bg-stone-700" />
+              <div className="absolute -left-1.5 mt-1.5 h-3 w-3 rounded-full border border-white bg-stone-200 dark:border-stone-800 dark:bg-stone-700" />
               <time className="mb-1 text-sm font-normal leading-none text-stone-400 dark:text-stone-500">
                 February 2023
               </time>
@@ -352,7 +352,7 @@ export default function Dashboard() {
             </li>
           </ol>
         </div>
-        <div className="p-4 bg-white border border-stone-200 rounded shadow-sm dark:border-stone-700 sm:p-6 dark:bg-stone-800"></div>
+        <div className="rounded border border-stone-200 bg-white p-4 shadow-sm dark:border-stone-700 dark:bg-stone-800 sm:p-6"></div>
       </div>
     </div>
   );

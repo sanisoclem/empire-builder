@@ -32,7 +32,7 @@ export default function Topbar({ className, mode, user, workspaces, ...props }: 
   };
   return (
     <div
-      className={`relative border-b border-solid dark:border-stone-700 border-stone-200  flex h-16 items-center justify-between gap-2 transition-colors bg-white dark:bg-stone-800 px-4 ${
+      className={`relative flex h-16 items-center justify-between  gap-2 border-b border-solid border-stone-200 bg-white px-4 transition-colors dark:border-stone-700 dark:bg-stone-800 ${
         className ?? ''
       }`}
       {...props}
@@ -44,15 +44,15 @@ export default function Topbar({ className, mode, user, workspaces, ...props }: 
         </div>
         <button
           type="button"
-          className="p-2 text-stone-500 rounded-lg hover:text-stone-900 hover:bg-stone-100 dark:text-stone-400 dark:hover:text-white dark:hover:bg-stone-700"
+          className="rounded-lg p-2 text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-white"
           onClick={toggleDark}
         >
-          {theme === 'dark' ? <SunIcon className="w-6 h-6" /> : <MoonIcon className="w-6 h-6" />}
+          {theme === 'dark' ? <SunIcon className="h-6 w-6" /> : <MoonIcon className="h-6 w-6" />}
         </button>
 
         <Popover className="relative">
-          <Popover.Button className="p-2 text-stone-500 rounded-lg hover:text-stone-900 hover:bg-stone-100 dark:text-stone-400 dark:hover:text-white dark:hover:bg-stone-700">
-            <Squares2X2Icon className="w-6 h-6" />
+          <Popover.Button className="rounded-lg p-2 text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-white">
+            <Squares2X2Icon className="h-6 w-6" />
           </Popover.Button>
           <Transition
             as={Fragment}
@@ -64,37 +64,37 @@ export default function Topbar({ className, mode, user, workspaces, ...props }: 
             leaveTo="opacity-0 transtone-y-1"
           >
             <Popover.Panel className="absolute right-0 z-20 mt-10 max-w-sm transform px-4 sm:px-0 lg:max-w-3xl">
-              <div className="overflow-hidden rounded tracking-wider shadow-lg ring-1 ring-stone-200 dark:ring-stone-700 ring-opacity-5 text-stone-700 dark:text-white dark:bg-stone-800 bg-white">
-                <div className="border-b font-semibold border-solid dark:border-stone-700 border-stone-200 text-center py-4">
+              <div className="overflow-hidden rounded bg-white tracking-wider text-stone-700 shadow-lg ring-1 ring-stone-200 ring-opacity-5 dark:bg-stone-800 dark:text-white dark:ring-stone-700">
+                <div className="border-b border-solid border-stone-200 py-4 text-center font-semibold dark:border-stone-700">
                   Workspaces
                 </div>
-                <div className=" p-6 flex gap-6">
+                <div className=" flex gap-6 p-6">
                   {workspaces.map((w) => (
                     <Link
                       to={ROUTES.workspace(w.id).dashboard}
                       key={w.id}
-                      className="cursor-pointer group text-stone-500 hover:bg-stone-500 hover:text-white dark:hover:text-white dark:text-stone-500 p-1 gap-y-1 rounded"
+                      className="group cursor-pointer gap-y-1 rounded p-1 text-stone-500 hover:bg-stone-500 hover:text-white dark:text-stone-500 dark:hover:text-white"
                     >
-                      <div className="h-20 w-20 flex-col p-1 rounded group-hover:text-white flex justify-center items-center">
+                      <div className="flex h-20 w-20 flex-col items-center justify-center rounded p-1 group-hover:text-white">
                         <WalletIcon className="h-12 w-12 flex-none" />
                       </div>
-                      <div className="text-sm font-semibold text-center flex-1">{w.name}</div>
+                      <div className="flex-1 text-center text-sm font-semibold">{w.name}</div>
                     </Link>
                   ))}
                   <Link
                     to={ROUTES.createWorkspace}
-                    className="cursor-pointer group hover:bg-indigo-500 hover:text-white p-1 gap-y-1 rounded"
+                    className="group cursor-pointer gap-y-1 rounded p-1 hover:bg-indigo-500 hover:text-white"
                   >
-                    <div className="h-20 w-20 flex-col p-1 text-indigo-500 rounded group-hover:text-white flex justify-center items-center">
+                    <div className="flex h-20 w-20 flex-col items-center justify-center rounded p-1 text-indigo-500 group-hover:text-white">
                       <PlusCircleIcon className="h-12 w-12 flex-none" />
                     </div>
-                    <div className="text-sm font-semibold text-center flex-1">Create</div>
+                    <div className="flex-1 text-center text-sm font-semibold">Create</div>
                   </Link>
                 </div>
               </div>
             </Popover.Panel>
           </Transition>
-          <Popover.Overlay className="fixed inset-0 z-10 transition-all bg-black/25 backdrop-blur" />
+          <Popover.Overlay className="fixed inset-0 z-10 bg-black/25 backdrop-blur transition-all" />
         </Popover>
         <UserButton afterSignOutUrl={ROUTES.home} />
       </div>

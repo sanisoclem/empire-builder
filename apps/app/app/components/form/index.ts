@@ -5,4 +5,4 @@ export { default as InputRadio } from './input-radio';
 export { default as InputCheck } from './input-check';
 export { default as InputCombo } from './input-combo';
 export { default as Select } from './select';
-export { default as InputCategoryCombo} from './input-category-combo';
+export { default as InputCategoryCombo } from './input-category-combo';

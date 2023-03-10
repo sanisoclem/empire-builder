@@ -21,14 +21,14 @@ export type BucketModalState = {
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'name is required' }).max(100),
-  category: z.string().max(100).nullable(),
+  category: z.string().max(100).nullable()
 });
 
 export const bucketModalAtom = atom<BucketModalState>({
   workspaceId: '',
   title: '',
   open: false,
-  editing: null,
+  editing: null
 });
 
 function BucketModal() {
@@ -43,7 +43,7 @@ function BucketModal() {
     defaultValues:
       state.editing !== null
         ? {
-          name: state.editing.name,
+            name: state.editing.name,
             category: state.editing.category
           }
         : undefined,
@@ -52,12 +52,12 @@ function BucketModal() {
 
   function handleSave(v: unknown) {
     const parsed = formSchema.parse(v);
-    
+
     if (state.editing === null) {
       fetcher.submit(
         {
           name: parsed.name,
-          category: parsed.category ?? '',
+          category: parsed.category ?? ''
         },
         {
           action: ROUTES.workspace(state.workspaceId).bucket.create,
@@ -69,10 +69,11 @@ function BucketModal() {
         {
           bucketId: state.editing.id.toString(),
           name: parsed.name,
-          category: parsed.category ?? '',
+          category: parsed.category ?? ''
         },
         {
-          action: ROUTES.workspace(state.workspaceId).bucket.item(state.editing.id.toString()).update,
+          action: ROUTES.workspace(state.workspaceId).bucket.item(state.editing.id.toString())
+            .update,
           method: 'post'
         }
       );

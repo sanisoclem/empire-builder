@@ -39,8 +39,11 @@ export const createModal =
                   leaveFrom="opacity-100 scale-100"
                   leaveTo="opacity-0 scale-95"
                 >
-                  <Dialog.Panel className="w-full max-w-md transform space-y-6 overflow-hidden rounded-2xl bg-white dark:bg-stone-800 p-6 text-left align-middle shadow-xl transition-all">
-                    <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-stone-900 dark:text-stone-50">
+                  <Dialog.Panel className="w-full max-w-md transform space-y-6 overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all dark:bg-stone-800">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg font-medium leading-6 text-stone-900 dark:text-stone-50"
+                    >
                       {state.title}
                     </Dialog.Title>
                     {state.open && <Modal {...state} />}
