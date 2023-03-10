@@ -1,5 +1,5 @@
 module.exports = {
   root: true,
-  extends: ['custom'],
+  extends: ['custom', 'eslint:recommended'],
   plugins: ['eslint-plugin-react']
 };
