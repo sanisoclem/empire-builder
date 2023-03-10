@@ -13,7 +13,6 @@ function hydrate() {
   });
 }
 
-// i am testing this with prettier
 if (typeof requestIdleCallback === 'function') {
   requestIdleCallback(hydrate);
 } else {
