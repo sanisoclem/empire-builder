@@ -13,7 +13,8 @@
     "build": "tsup",
     "clean": "rm -rf dist",
     "dev": "tsup --watch",
-    "lint": "eslint \"src/**/*.ts*\""
+    "lint": "eslint \"src/**/*.ts*\"",
+    "lint:staged": "pnpx eslint --fix"
   },
   "peerDependencies": {
     "react": "^18.2.0"
