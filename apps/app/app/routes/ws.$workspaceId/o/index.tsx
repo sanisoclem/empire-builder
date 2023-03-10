@@ -21,7 +21,7 @@ const loaderSchema = z.object({
 export const loader = async (args: DataFunctionArgs): Promise<z.infer<typeof loaderSchema>> => {
   const wsClient = new WorkspaceClient(args);
   const workspaceId = requireWorkspaceId(args.params);
-  const accounts = await wsClient.getAccountBalances(workspaceId);
+  const [accounts, _] = await wsClient.getAccountBalances(workspaceId);
 
   return {
     accounts

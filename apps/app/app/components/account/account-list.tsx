@@ -32,7 +32,12 @@ const getDecimals = (v: number, precision: number) =>
   (Math.abs(v) - getWhole(v)).toFixed(precision).substring(1);
 
 export default function AccountList({ accounts, onViewTransactions, onEditAccount }: Props) {
-  const transformedAccounts = accounts.map((a) => ({
+  const transformedAccounts = accounts
+  .map(a=> ({
+    ...a,
+    balance: a.balance / Math.pow(10, a.precision)
+  }))
+  .map((a) => ({
     ...a,
     balanceFraction: getDecimals(a.balance, a.precision),
     balanceWhole: getWhole(a.balance),

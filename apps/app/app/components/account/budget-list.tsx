@@ -154,8 +154,8 @@ export default function BudgetList({ workspaceId, currency, precision, buckets }
       submitJsonRequest(
         fetcher,
         ROUTES.workspace(workspaceId).bucket.organize,
+        organizeBudgetPayloadSchema,
         arg,
-        organizeBudgetPayloadSchema
       ),
     2000
   );
@@ -182,7 +182,6 @@ export default function BudgetList({ workspaceId, currency, precision, buckets }
       const [target, targetCat, targetIdx] = s
         .flatMap((s, i1) => s.buckets.map((b, i2) => [b, s, i1 * 10000 + i2] as const))
         .find(([b, s, i]) => i === hoverIndex)!;
-      console.log(dragIndex, src.name, hoverIndex, target.name);
 
       const retval = s.map((cat) => {
         if (cat === srcCat && cat === targetCat) {

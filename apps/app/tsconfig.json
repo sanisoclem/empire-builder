@@ -1,8 +1,10 @@
 {
   "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["public", "build", "node_modules"],
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "ES2019"],
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "jsx": "react-jsx",
     "moduleResolution": "node",
     "resolveJsonModule": true,

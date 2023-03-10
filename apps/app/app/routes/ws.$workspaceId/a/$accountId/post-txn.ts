@@ -1,24 +1,53 @@
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { z } from 'zod';
-import { requireAccountId, requireParameters } from '~api/policy.server';
+import { getJsonRequest } from '~api/formData';
+import { requireAccountId } from '~api/policy.server';
 import { WorkspaceClient } from '~api/workspace/api';
 
-const payloadSchema = z.object({
-  name: z.string().min(1).max(100),
-  accountType: z.string().max(100).nullable(),
-  notes: z.string().max(1024).nullable()
+const txnDataSchema = z.union([
+  z.object({
+    type: z.literal('draft'),
+    amount: z.number().int()
+  }),
+  z.object({
+    type: z.literal('transfer'),
+    otherAccountId: z.number(),
+    otherAmount: z.number().int().nullable(),
+    amount: z.number().int()
+  }),
+  z.object({
+    type: z.literal('external'),
+    bucketId: z.number(),
+    amount: z.number().int(),
+    payee: z.string().max(100)
+  })
+]);
+
+export const postTxnPayloadSchema = z.object({
+  txnId: z.number().optional(),
+  date: z.string(),
+  note: z.string().max(250),
+  data: z.array(txnDataSchema).nonempty()
 });
 
 export const action: LoaderFunction = async (args) => {
   const { workspaceId, accountId } = requireAccountId(args.params);
   const wsClient = new WorkspaceClient(args);
-  const formData = await args.request.formData();
-  const payload = payloadSchema.safeParse(Object.fromEntries(formData));
+  const payload = await getJsonRequest(args, postTxnPayloadSchema);
 
-  if (!payload.success) return new Response('Bad Request', { status: 400 });
-
-  const data = payload.data;
-  await wsClient.updateAccount(workspaceId, accountId, data.name, data.accountType, data.notes);
+  if (payload.txnId === undefined) {
+    await wsClient.postTransaction(workspaceId, {
+      accountId: accountId,
+      ...payload,
+      date: new Date(payload.date)
+    });
+  } else {
+    await wsClient.updateTransaction(workspaceId, payload.txnId, {
+      accountId: accountId,
+      ...payload,
+      date: new Date(payload.date)
+    });
+  }
 
   return {};
 };

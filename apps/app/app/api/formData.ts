@@ -26,20 +26,22 @@ export const getJsonRequest = async <T extends ZodTypeAny>(
 
   const payload = payloadSchema.safeParse(JSON.parse(raw));
 
-  if (!payload.success) throw new Response('Bad Request', { status: 400 });
+  if (!payload.success) {
+    console.log(payload.error);
+    throw new Response('Bad Request', { status: 400 });
+  }
   return payload.data;
 };
 
 export const submitJsonRequest = <T extends ZodTypeAny, F>(
   fetcher: ReturnType<typeof useFetcher<F>>,
   route: string,
-  data: unknown,
-  schema: T
+  schema: T,
+  data: z.infer<T>
 ) => {
-  const parsed = schema.parse(data);
   fetcher.submit(
     {
-      request: JSON.stringify(parsed)
+      request: JSON.stringify(data)
     },
     {
       method: 'post',

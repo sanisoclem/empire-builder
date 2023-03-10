@@ -1,4 +1,4 @@
-import { useNavigate } from '@remix-run/react';
+import { useLoaderData, useNavigate } from '@remix-run/react';
 import { DataFunctionArgs } from '@remix-run/server-runtime';
 import { z } from 'zod';
 import { ROUTES } from '~/routes';
@@ -6,33 +6,25 @@ import { requireWorkspaceId } from '~api/policy.server';
 import { WorkspaceClient } from '~api/workspace/api';
 import { Button, PageHeader } from '~components';
 import AccountList from '~components/account/account-list';
-import { useLoaderDataStrict, useModal, useRouteData } from '~hooks';
+import { useModal, useRouteData } from '~hooks';
 import { workspaceRouteData } from '../../ws.$workspaceId';
 
-const loaderSchema = z.object({
-  accounts: z.array(
-    z.object({
-      id: z.number(),
-      name: z.string(),
-      currency_id: z.string(),
-      type: z.string().nullable()
-    })
-  )
-});
-
-export const loader = async (args: DataFunctionArgs): Promise<z.infer<typeof loaderSchema>> => {
+export const loader = async (args: DataFunctionArgs) => {
   const wsClient = new WorkspaceClient(args);
   const workspaceId = requireWorkspaceId(args.params);
-  const accounts = await wsClient.getAccountBalances(workspaceId);
+  const [accounts, balances] = await wsClient.getAccountBalances(workspaceId);
 
   return {
-    accounts
+    accounts: accounts.map((a) => ({
+      ...a,
+      balance: balances.accounts[a.id.toString()] ?? 0
+    }))
   };
 };
 
 export default function Accounts() {
   const { currencies, workspaceId } = useRouteData(workspaceRouteData);
-  const { accounts } = useLoaderDataStrict(loaderSchema);
+  const { accounts } = useLoaderData<ReturnTypePromise<typeof loader>>();
   const { newAccount, editAccount } = useModal();
   const navigate = useNavigate();
   const fakeAccounts = accounts
@@ -41,14 +33,12 @@ export default function Accounts() {
       name: a.name,
       type: a.type ?? '',
       denomination: a.currency_id,
+      balance: a.balance,
       precision: currencies.find((c) => c.id === a.currency_id)!.precision
     }))
     .map((a) => ({
       ...a,
-      balance:
-        ((Math.random() - 0.5) * Math.pow(10, Math.max(a.precision, 6) + 1)) /
-        Math.pow(10, a.precision),
-      flow: (Math.random() - 0.5) * 10000
+      flow: 0
     }));
 
   const handleCreateAccount = () => {

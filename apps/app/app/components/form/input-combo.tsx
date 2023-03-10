@@ -49,7 +49,7 @@ export default React.forwardRef<HTMLInputElement, Props>(function InputCombo(
 
           <div className="relative w-full cursor-default overflow-hidden rounded-md border border-stone-400 focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500">
             <Combobox.Input
-              className="w-full border-none bg-stone-50 py-2 pl-3 pr-10 text-sm leading-5 text-stone-600 focus:bg-white focus:text-stone-900 focus:ring-0 dark:bg-stone-700 dark:text-stone-400 dark:focus:text-stone-200"
+              className="w-full border-none bg-stone-50 py-2 pl-3 pr-10 text-sm leading-5 text-stone-600 focus:bg-white focus:text-stone-900 focus:ring-0 dark:bg-stone-700 dark:text-stone-400 dark:focus:text-stone-200 dark:placeholder:text-stone-400"
               displayValue={(choice: Choice) => choice?.name}
               onChange={(event) => setQuery(event.target.value)}
               {...props}
