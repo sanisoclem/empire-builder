@@ -33,6 +33,7 @@ export const action: LoaderFunction = async (args) => {
   const { workspaceId, accountId } = requireAccountId(args.params);
   const wsClient = new WorkspaceClient(args);
   const payload = await getJsonRequest(args, postTxnPayloadSchema);
+  console.log(payload);
 
   await wsClient.postTransaction(workspaceId, {
     accountId: accountId,

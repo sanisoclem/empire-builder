@@ -3,6 +3,7 @@ import { fromCompressedId, genCompressedId, toCompressedId } from '~api/id';
 import { DbClient } from 'db-totality';
 import { DataFunctionArgs } from '@remix-run/server-runtime';
 import { z } from 'zod';
+import { mapNonEmpty } from '~api/array';
 
 interface OnboardingRequest {
   userId: string;
@@ -341,6 +342,9 @@ export class WorkspaceClient {
       throw new Response('Unauthorized', { status: 403 });
 
     const txns = await this.dbClient.client.transaction.findMany({
+      orderBy: {
+        date: 'desc'
+      },
       where: {
         AND: [
           {
@@ -352,7 +356,7 @@ export class WorkspaceClient {
               },
               {
                 data: {
-                  array_contains: [{ accountId: accountId }]
+                  array_contains: [{ otherAccountId: accountId }]
                 }
               }
             ]
@@ -364,10 +368,28 @@ export class WorkspaceClient {
       }
     });
 
-    return txns.map(t=> ({
+    return txns.map((t) => ({
       ...t,
-      data: txnDataSchema.parse(t.data)
-    }))
+      data: mapNonEmpty(txnDataSchema.parse(t.data), (d) =>
+        d.accountId === accountId
+          ? d
+          : d.type === 'transfer' && d.otherAccountId === accountId
+          ? {
+              ...d,
+              accountId: accountId,
+              otherAccountId: d.accountId,
+              amount:
+                'otherAmount' in d && d.otherAmount !== null
+                  ? d.otherAmount * (Math.abs(d.amount) / (d.amount * -1))
+                  : d.amount * -1,
+              otherAmount: 'otherAmount' in d && d.otherAmount !== null ? Math.abs(d.amount) : null
+            }
+          : {
+              ...d,
+              amount: 0
+            }
+      )
+    }));
   }
 
   async postTransaction(
@@ -405,7 +427,7 @@ export class WorkspaceClient {
     // calculate new balance
     // supersede balance, post new balance and txn
 
-    this.dbClient.client.$transaction(
+    await this.dbClient.client.$transaction(
       async (c) => {
         const latestBalance = await c.balance.findFirst({
           where: {
@@ -439,7 +461,13 @@ export class WorkspaceClient {
               break;
             case 'transfer':
               addAccountBalance(bal, txn.accountId.toString(), d.amount);
-              addAccountBalance(bal, d.otherAccountId.toString(), d.otherAmount ?? d.amount);
+              addAccountBalance(
+                bal,
+                d.otherAccountId.toString(),
+                d.otherAmount !== null
+                  ? d.otherAmount * (Math.abs(d.amount) / (d.amount * -1))
+                  : d.amount * -1
+              );
               break;
           }
         });

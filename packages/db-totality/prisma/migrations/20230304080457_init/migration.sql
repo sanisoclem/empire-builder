@@ -90,7 +90,7 @@ CREATE INDEX "fki_balance_superseded_by_fkey" ON "balance"("workspace_id", "supe
 CREATE INDEX "fki_balance_workspace_id_fkey" ON "balance"("workspace_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "balance_workspace_id_superseded_by_key" ON "balance"("workspace_id", "superseded_by") NULLS NOT DISTINCT;
+CREATE UNIQUE INDEX "balance_workspace_id_superseded_by_key" ON "balance"("workspace_id", "superseded_by");
 
 -- CreateIndex
 CREATE INDEX "fki_bucket_workspace_id_fkey" ON "bucket"("workspace_id");
@@ -105,7 +105,7 @@ CREATE INDEX "fki_transaction_superseded_by_fkey" ON "transaction"("workspace_id
 CREATE INDEX "fki_transaction_workspace_id_fkey" ON "transaction"("workspace_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "transaction_workspace_id_superseded_by_key" ON "transaction"("workspace_id", "superseded_by") NULLS NOT DISTINCT;
+CREATE UNIQUE INDEX "transaction_workspace_id_superseded_by_key" ON "transaction"("workspace_id", "superseded_by");
 
 -- AddForeignKey
 ALTER TABLE "workspace" ADD CONSTRAINT "workspace_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE RESTRICT;

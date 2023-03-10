@@ -10,7 +10,6 @@ export const useTheme = () => {
   useEffect(() => {
     if (theme === 'notset') {
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      console.log(theme);
       setTheme(isDark ? 'dark' : 'light');
     }
   }, [setTheme, theme]);
