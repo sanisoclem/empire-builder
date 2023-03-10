@@ -30,7 +30,7 @@ export const useModal = () => {
         open: true,
         editing: null,
         title: 'New income or expense bucket',
-        workspaceId,
+        workspaceId
       })),
     editBucket: (bucket: NonNullable<BucketModalState['editing']>, workspaceId: string) =>
       setBucketModalState((s) => ({

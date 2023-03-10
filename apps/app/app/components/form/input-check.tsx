@@ -14,7 +14,7 @@ export default React.forwardRef<HTMLInputElement, Props>(function InputCheck(
         <input
           ref={ref}
           type="checkbox"
-          className="w-4 h-4 border-stone-300 rounded bg-stone-50 focus:ring-3 focus:ring-indigo-500 dark:focus:ring-indigo-500 dark:ring-offset-stone-800 dark:bg-stone-700 dark:border-stone-600"
+          className="focus:ring-3 h-4 w-4 rounded border-stone-300 bg-stone-50 focus:ring-indigo-500 dark:border-stone-600 dark:bg-stone-700 dark:ring-offset-stone-800 dark:focus:ring-indigo-500"
           {...props}
         />
       </div>

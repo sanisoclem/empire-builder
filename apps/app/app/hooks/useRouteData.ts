@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { z } from 'zod';
 import type { ROUTE_DEFS } from '~/routes';
 
-type RouteId = Extract<typeof ROUTE_DEFS[keyof typeof ROUTE_DEFS], string>;
+type RouteId = Extract<(typeof ROUTE_DEFS)[keyof typeof ROUTE_DEFS], string>;
 export interface RouteDataDef<T extends z.ZodTypeAny> {
   routeId: RouteId;
   schema: T;

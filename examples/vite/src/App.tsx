@@ -1,6 +1,6 @@
-import * as React from "react";
-import "./App.css";
-import { Button } from "ui";
+import * as React from 'react';
+import './App.css';
+import { Button } from 'ui';
 
 function App() {
   return (
@@ -10,10 +10,7 @@ function App() {
         <span>Kitchen Sink</span>
       </h1>
       <Button />
-      <p className="description">
-        Built With{" "}
-
-      </p>
+      <p className="description">Built With </p>
     </div>
   );
 }

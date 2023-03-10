@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect } from 'react';
 
 type Timer = ReturnType<typeof setTimeout>;
 type SomeFunction = (...args: any[]) => void;
@@ -9,10 +9,7 @@ type SomeFunction = (...args: any[]) => void;
  * @returns The debounced function, which will run only if the debounced function has not been called in the last (delay) ms
  */
 
-export function useDebounce<Func extends SomeFunction>(
-  func: Func,
-  delay = 1000
-) {
+export function useDebounce<Func extends SomeFunction>(func: Func, delay = 1000) {
   const timer = useRef<Timer>();
 
   useEffect(() => {
@@ -30,5 +27,5 @@ export function useDebounce<Func extends SomeFunction>(
     timer.current = newTimer;
   }) as Func;
 
-  return { fn: debouncedFunction, isDebouncing: !!timer.current } ;
+  return { fn: debouncedFunction, isDebouncing: !!timer.current };
 }

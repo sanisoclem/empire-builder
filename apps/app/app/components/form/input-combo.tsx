@@ -39,7 +39,9 @@ export default React.forwardRef<HTMLInputElement, Props>(function InputCombo(
         <div className={`space-y-2 ${className ?? ''}`}>
           <label
             className={`${
-              !!label ?? true ? 'block text-sm font-medium text-stone-700 dark:text-stone-300' : 'sr-only'
+              !!label ?? true
+                ? 'block text-sm font-medium text-stone-700 dark:text-stone-300'
+                : 'sr-only'
             }`}
           >
             {label}

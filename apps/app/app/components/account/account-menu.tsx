@@ -47,7 +47,10 @@ export default function AccountMenu({ onRename, onTransactions, onCloseAccount }
             leaveFrom="transform opacity-100"
             leaveTo="transform opacity-0"
           >
-            <Menu.Items ref={container} className="w-56 divide-y divide-stone-300 rounded-lg bg-stone-50 drop-shadow-2xl ring-1 ring-stone-900 ring-opacity-20 focus:outline-none">
+            <Menu.Items
+              ref={container}
+              className="w-56 divide-y divide-stone-300 rounded-lg bg-stone-50 ring-1 ring-stone-900 ring-opacity-20 drop-shadow-2xl focus:outline-none"
+            >
               <div className="px-1 py-1 ">
                 <Menu.Item>
                   <button className="menu-item group" onClick={() => onTransactions?.()}>

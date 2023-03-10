@@ -328,70 +328,73 @@ export class WorkspaceClient {
     // calculate new balance
     // supersede balance, post new balance and txn
 
-    this.dbClient.client.$transaction(async (c) => {
-      const latestBalance = await c.balance.findFirstOrThrow({
-        where: {
-          workspace_id: workspaceId,
-          superseded_by: null
-        }
-      });
-      const account = await c.account.findUniqueOrThrow({
-        where: {
-          workspace_id_id: {
-            id: txn.accountId,
-            workspace_id: workspaceId
+    this.dbClient.client.$transaction(
+      async (c) => {
+        const latestBalance = await c.balance.findFirstOrThrow({
+          where: {
+            workspace_id: workspaceId,
+            superseded_by: null
           }
-        }
-      });
-      const bal = ledgerBalanceSchema.parse(latestBalance.ledger_balance);
+        });
+        const account = await c.account.findUniqueOrThrow({
+          where: {
+            workspace_id_id: {
+              id: txn.accountId,
+              workspace_id: workspaceId
+            }
+          }
+        });
+        const bal = ledgerBalanceSchema.parse(latestBalance.ledger_balance);
 
-      txn.data.forEach((d) => {
-        switch (d.type) {
-          case 'draft':
-            addAccountBalance(bal, txn.accountId.toString(), d.amount);
-            addFloatingBalance(bal, account.currency_id, d.amount * -1);
-            break;
-          case 'external':
-            addAccountBalance(bal, txn.accountId.toString(), d.amount);
-            addBucketBalance(bal, d.bucketId.toString(), account.currency_id, d.amount * -1);
-            break;
-          case 'transfer':
-            addAccountBalance(bal, txn.accountId.toString(), d.amount);
-            addAccountBalance(bal, d.otherAccountId.toString(), d.otherAmount ?? d.amount);
-            break;
-        }
-      });
-      const { id } = await c.balance.create({
-        data: {
-          workspace_id: workspaceId,
-          budget_balance: latestBalance.budget_balance ?? {},
-          ledger_balance: bal,
-          superseded_by: null
-        }
-      });
-      await c.balance.update({
-        where: {
-          workspace_id_id: {
-            id: latestBalance.id,
-            workspace_id: workspaceId
+        txn.data.forEach((d) => {
+          switch (d.type) {
+            case 'draft':
+              addAccountBalance(bal, txn.accountId.toString(), d.amount);
+              addFloatingBalance(bal, account.currency_id, d.amount * -1);
+              break;
+            case 'external':
+              addAccountBalance(bal, txn.accountId.toString(), d.amount);
+              addBucketBalance(bal, d.bucketId.toString(), account.currency_id, d.amount * -1);
+              break;
+            case 'transfer':
+              addAccountBalance(bal, txn.accountId.toString(), d.amount);
+              addAccountBalance(bal, d.otherAccountId.toString(), d.otherAmount ?? d.amount);
+              break;
           }
-        },
-        data: {
-          superseded_by: id
-        }
-      });
-      await c.transaction.create({
-        data: {
-          create_at: new Date(),
-          created_by: fromCompressedId(customClaims.appUserId),
-          workspace_id: workspaceId,
-          date: txn.date,
-          notes: txn.note,
-          balance: id,
-          data: txn.data,
-          superseded_by: null
-        }
-      });
-    },{isolationLevel: 'RepeatableRead'});
+        });
+        const { id } = await c.balance.create({
+          data: {
+            workspace_id: workspaceId,
+            budget_balance: latestBalance.budget_balance ?? {},
+            ledger_balance: bal,
+            superseded_by: null
+          }
+        });
+        await c.balance.update({
+          where: {
+            workspace_id_id: {
+              id: latestBalance.id,
+              workspace_id: workspaceId
+            }
+          },
+          data: {
+            superseded_by: id
+          }
+        });
+        await c.transaction.create({
+          data: {
+            create_at: new Date(),
+            created_by: fromCompressedId(customClaims.appUserId),
+            workspace_id: workspaceId,
+            date: txn.date,
+            notes: txn.note,
+            balance: id,
+            data: txn.data,
+            superseded_by: null
+          }
+        });
+      },
+      { isolationLevel: 'RepeatableRead' }
+    );
   }
 }

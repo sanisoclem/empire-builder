@@ -39,9 +39,8 @@ export default function Accounts() {
       value: 15000,
       currency: currencies[0].id
     }
-  ]
+  ];
 
-  
   return (
     <div className="w-full self-stretch bg-white dark:bg-stone-800">
       <nav className="flex h-24 items-center justify-between px-4 py-6">
@@ -49,9 +48,7 @@ export default function Accounts() {
         <Button>New Asset</Button>
       </nav>
       <div className="h-[calc(100vh-10rem)] w-full overflow-auto">
-        <OtherAssetList
-          assets={assets}
-        />
+        <OtherAssetList assets={assets} />
       </div>
     </div>
   );

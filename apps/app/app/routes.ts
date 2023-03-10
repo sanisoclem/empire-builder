@@ -63,12 +63,12 @@ export const ROUTES = route('/', {
         update: 'update'
       })
     }),
-    stock:  route('s/', {
-      manage: '',
+    stock: route('s/', {
+      manage: ''
     }),
-    otherAssets:  route('o/', {
-      manage: '',
-    }),
+    otherAssets: route('o/', {
+      manage: ''
+    })
   })
 });
 

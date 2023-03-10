@@ -1,5 +1,5 @@
-import { ReactNode } from "react";
-import { useHydrated } from "~hooks";
+import { ReactNode } from 'react';
+import { useHydrated } from '~hooks';
 
 type Props = {
   children(): ReactNode;

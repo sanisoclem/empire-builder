@@ -284,7 +284,7 @@ export default function TxnList({
     resolver: zodResolver(formSchema)
   });
   const account = accounts.find((a) => a.id === accountId)!;
-  const filteredAccounts = accounts.filter(a=>a.id !== accountId);
+  const filteredAccounts = accounts.filter((a) => a.id !== accountId);
   const { handleSubmit, reset } = form;
   const categories = [
     ...filteredAccounts.map((a) => ({

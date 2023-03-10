@@ -18,13 +18,7 @@ export const action: LoaderFunction = async (args) => {
   if (!payload.success) return new Response('Bad Request', { status: 400 });
 
   const data = payload.data;
-  await wsClient.updateAccount(
-    workspaceId,
-    accountId,
-    data.name,
-    data.accountType,
-    data.notes
-  );
+  await wsClient.updateAccount(workspaceId, accountId, data.name, data.accountType, data.notes);
 
   return {};
 };

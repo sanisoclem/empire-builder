@@ -1,9 +1,9 @@
-import { log } from "logger";
-import Head from "next/head";
-import { Button } from "ui";
+import { log } from 'logger';
+import Head from 'next/head';
+import { Button } from 'ui';
 
 export default function Store() {
-  log("Hey! This is Home.");
+  log('Hey! This is Home.');
   return (
     <div className="container">
       <Head>
@@ -14,9 +14,7 @@ export default function Store() {
         <span>Kitchen Sink</span>
       </h1>
       <Button />
-      <p className="description">
-        Built With{" "}
-      </p>
+      <p className="description">Built With </p>
     </div>
   );
 }
