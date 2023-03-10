@@ -12,7 +12,8 @@
     "build": "tsc",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "dev": "tsc -w",
-    "lint": "eslint \"src/**/*.ts*\""
+    "lint": "eslint \"src/**/*.ts*\"",
+    "lint:staged": "pnpx eslint --fix"
   },
   "devDependencies": {
     "@types/node": "^18.11.9",
