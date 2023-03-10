@@ -192,7 +192,7 @@ function TxnEdit({ categories, onCancel, currency }: TxEditProps) {
               let d = data[i]!;
               return (
                 d.category?.type === 'account' &&
-                d.category.currency === currency && (
+                d.category.currency !== currency && (
                   <Input
                     variant="sm"
                     type="number"
@@ -284,9 +284,10 @@ export default function TxnList({
     resolver: zodResolver(formSchema)
   });
   const account = accounts.find((a) => a.id === accountId)!;
+  const filteredAccounts = accounts.filter(a=>a.id !== accountId);
   const { handleSubmit, reset } = form;
   const categories = [
-    ...accounts.map((a) => ({
+    ...filteredAccounts.map((a) => ({
       id: `A_${a.id}`,
       name: a.name,
       type: 'account' as const,

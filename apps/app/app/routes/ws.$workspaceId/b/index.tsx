@@ -28,7 +28,7 @@ export const loader = async (args: DataFunctionArgs): Promise<z.infer<typeof loa
   };
 };
 
-export default function Accounts() {
+export default function Budget() {
   const { workspaceId } = useRouteData(workspaceRouteData);
   const { buckets } = useLoaderDataStrict(loaderSchema);
   const { newBucket } = useModal();

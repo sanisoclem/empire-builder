@@ -32,6 +32,6 @@ html {
 
 .menu-item {
   @apply flex w-full items-center rounded-sm px-2 py-2 text-sm text-stone-700 font-semibold;
-  @apply data-[headlessui-state=active]:bg-indigo-500 data-[headlessui-state=active]:text-white;
+  @apply data-[headlessui-state=active]:bg-sky-500 data-[headlessui-state=active]:text-white;
 }
 

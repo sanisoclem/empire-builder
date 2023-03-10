@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { ROUTES } from '~/routes';
+import { organizeBudgetPayloadSchema } from '~/routes/ws.$workspaceId/b/organize';
+import { submitJsonRequest } from '~api/formData';
 import { ClientOnly, Loader } from '~components/base';
 import { useDebounce } from '~hooks';
 
@@ -149,14 +151,11 @@ export default function BudgetList({ workspaceId, currency, precision, buckets }
   const fetcher = useFetcher();
   const { fn: organize, isDebouncing } = useDebounce(
     (arg) =>
-      fetcher.submit(
-        {
-          request: JSON.stringify(arg)
-        },
-        {
-          method: 'post',
-          action: ROUTES.workspace(workspaceId).bucket.organize
-        }
+      submitJsonRequest(
+        fetcher,
+        ROUTES.workspace(workspaceId).bucket.organize,
+        arg,
+        organizeBudgetPayloadSchema
       ),
     2000
   );
@@ -236,7 +235,13 @@ export default function BudgetList({ workspaceId, currency, precision, buckets }
     );
   }, [buckets]);
   return (
-    <ClientOnly fallback={<div className="h-full w-full flex justify-center items-center"><Loader /></div>}>
+    <ClientOnly
+      fallback={
+        <div className="flex h-full w-full items-center justify-center">
+          <Loader />
+        </div>
+      }
+    >
       {() => (
         <DndProvider backend={HTML5Backend}>
           <table className="relative min-w-full table-fixed divide-y divide-stone-200 dark:divide-stone-600">

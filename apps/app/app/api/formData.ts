@@ -1,4 +1,6 @@
-import type { z } from 'zod';
+import { useFetcher } from '@remix-run/react';
+import { DataFunctionArgs } from '@remix-run/server-runtime';
+import type { z, ZodTypeAny } from 'zod';
 
 export const getFormDataStrict = async <T extends z.ZodTypeAny>(
   request: Request,
@@ -11,4 +13,37 @@ export const getFormDataStrict = async <T extends z.ZodTypeAny>(
       status: 400
     });
   return result.data;
+};
+
+export const getJsonRequest = async <T extends ZodTypeAny>(
+  args: DataFunctionArgs,
+  payloadSchema: T
+): Promise<z.infer<T>> => {
+  const formData = await args.request.formData();
+  const raw = formData.get('request');
+
+  if (typeof raw !== 'string') throw new Response('Bad Request', { status: 400 });
+
+  const payload = payloadSchema.safeParse(JSON.parse(raw));
+
+  if (!payload.success) throw new Response('Bad Request', { status: 400 });
+  return payload.data;
+};
+
+export const submitJsonRequest = <T extends ZodTypeAny, F>(
+  fetcher: ReturnType<typeof useFetcher<F>>,
+  route: string,
+  data: unknown,
+  schema: T
+) => {
+  const parsed = schema.parse(data);
+  fetcher.submit(
+    {
+      request: JSON.stringify(parsed)
+    },
+    {
+      method: 'post',
+      action: route
+    }
+  );
 };

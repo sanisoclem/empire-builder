@@ -5,7 +5,6 @@ import { WorkspaceClient } from '~api/workspace/api';
 import { Button, PageHeader } from '~components';
 import StockPortfolioList from '~components/account/stock-portfolio-list';
 import { useLoaderDataStrict, useRouteData } from '~hooks';
-import { workspaceRouteData } from '../../ws.$workspaceId';
 
 const loaderSchema = z.object({
   accounts: z.array(

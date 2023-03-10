@@ -392,6 +392,6 @@ export class WorkspaceClient {
           superseded_by: null
         }
       });
-    });
+    },{isolationLevel: 'RepeatableRead'});
   }
 }

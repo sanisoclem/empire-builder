@@ -1,4 +1,4 @@
-import { useMatches } from '@remix-run/react';
+import { useMatches, useRouteLoaderData } from '@remix-run/react';
 import { useMemo } from 'react';
 import { z } from 'zod';
 import type { ROUTE_DEFS } from '~/routes';
@@ -17,11 +17,7 @@ export const makeRouteData = <T extends z.ZodTypeAny>(
 });
 
 export const useRouteData = <T extends z.ZodTypeAny>(def: RouteDataDef<T>): z.infer<T> => {
-  const matches = useMatches();
-  return useMemo(
-    () => def.schema.parse(matches.find((match) => match.id === def.routeId)?.data),
-    [def.routeId, def.schema, matches]
-  );
+  return def.schema.parse(useRouteLoaderData(def.routeId));
 };
 
 export const useOptionalRouteData = <T extends z.ZodTypeAny>(

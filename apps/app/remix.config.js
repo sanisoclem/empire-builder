@@ -8,7 +8,7 @@ module.exports = {
   // serverBuildPath: "build/index.js",
   // publicPath: "/build/",
   future: {
-    unstable_tailwind: true
+    unstable_postcss: true,
   },
   serverDependenciesToBundle: [
     'react-dnd',

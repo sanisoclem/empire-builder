@@ -1,4 +1,4 @@
-import { useLoaderData } from '@remix-run/react';
+import { useLoaderData, useRouteLoaderData } from '@remix-run/react';
 import { DataFunctionArgs } from '@remix-run/server-runtime';
 import { useState } from 'react';
 import { requireAccountId, requireWorkspaceId } from '~api/policy.server';

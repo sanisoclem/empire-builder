@@ -60,7 +60,7 @@ export default function StockPortfolioList({ portfolios }: Props) {
                 <div className="text-sm font-normal text-stone-500 dark:text-stone-400">
                   <Link
                     to={
-                      ROUTES.workspace(workspaceId).account(p.settlementAccountId.toString())
+                      ROUTES.workspace(workspaceId).account.item(p.settlementAccountId.toString())
                         .transactions
                     }
                   >
