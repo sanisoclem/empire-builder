@@ -22,7 +22,7 @@
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
       "pnpx prettier --write",
-      "turbo run lint --fix"
+      "turbo run lint:staged --"
     ]
   }
 }
