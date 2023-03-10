@@ -1,6 +1,6 @@
-import { RemixBrowser } from "@remix-run/react";
-import { startTransition, StrictMode } from "react";
-import { hydrateRoot } from "react-dom/client";
+import { RemixBrowser } from '@remix-run/react';
+import { startTransition, StrictMode } from 'react';
+import { hydrateRoot } from 'react-dom/client';
 
 function hydrate() {
   startTransition(() => {
@@ -13,7 +13,8 @@ function hydrate() {
   });
 }
 
-if (typeof requestIdleCallback === "function") {
+// i am testing this with prettier
+if (typeof requestIdleCallback === 'function') {
   requestIdleCallback(hydrate);
 } else {
   // Safari doesn't support requestIdleCallback
