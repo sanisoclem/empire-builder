@@ -9,6 +9,7 @@ import { formSchema, Txn } from './txn-form-schema';
 import { NumericFormat } from 'react-number-format';
 import Decimal from 'decimal.js';
 import { mapNonEmpty } from '~api/array';
+import { useCallback, useEffect } from 'react';
 
 type TxEditProps = {
   currency: string;
@@ -46,7 +47,7 @@ const toQuantized = (v: string | number, precision: number) => {
 
 const fromQuantized = (v: number, precision: number) => {
   try {
-    return new Decimal(v).div(new Decimal(10).pow(new Decimal(precision))).toNumber();
+    return new Decimal(v).div(new Decimal(10).pow(new Decimal(precision))).toString() as any;
   } catch {
     return NaN;
   }
@@ -65,7 +66,7 @@ export default function TxnEdit({
     txn === undefined
       ? { data: [{}] }
       : {
-          date: txn.date,
+          date: txn.date.toISOString().split('T')[0] as any,
           notes: txn.notes ?? '',
           data: txn.data
             .map((d) =>
@@ -102,6 +103,18 @@ export default function TxnEdit({
   });
   const { fields, append, remove } = useFieldArray({ control, name: 'data' });
   const data = useWatch({ control, name: 'data' });
+
+  const handlEsc = useCallback((event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      onCancel?.();
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handlEsc);
+
+    return () => document.removeEventListener('keydown', handlEsc);
+  }, [handlEsc]);
 
   const handleSave = (v: z.infer<typeof formSchema>) => {
     onSubmit?.({
@@ -190,7 +203,7 @@ export default function TxnEdit({
               return (
                 otherCurrency !== currency && (
                   <Controller
-                    render={({ field }) => (
+                    render={({ field: { ref, ...field } }) => (
                       <NumericFormat
                         decimalScale={otherPrecision}
                         fixedDecimalScale={true}
@@ -211,7 +224,7 @@ export default function TxnEdit({
           </td>
           <td className="whitespace-nowrap px-1 py-2 font-medium text-stone-500">
             <Controller
-              render={({ field }) => (
+              render={({ field: { ref, ...field } }) => (
                 <NumericFormat
                   decimalScale={precision}
                   fixedDecimalScale={true}

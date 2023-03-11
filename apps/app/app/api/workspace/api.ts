@@ -570,15 +570,15 @@ export class WorkspaceClient {
         existinTxnData.forEach((d) => {
           switch (d.type) {
             case 'draft':
-              addAccountBalance(bal, txn.accountId.toString(), d.amount * -1);
+              addAccountBalance(bal, d.accountId.toString(), d.amount * -1);
               addFloatingBalance(bal, account.currency_id, d.amount * -1);
               break;
             case 'external':
-              addAccountBalance(bal, txn.accountId.toString(), d.amount * -1);
+              addAccountBalance(bal, d.accountId.toString(), d.amount * -1);
               addBucketBalance(bal, d.bucketId.toString(), account.currency_id, d.amount);
               break;
             case 'transfer':
-              addAccountBalance(bal, txn.accountId.toString(), d.amount * -1);
+              addAccountBalance(bal, d.accountId.toString(), d.amount * -1);
               addAccountBalance(
                 bal,
                 d.otherAccountId.toString(),
