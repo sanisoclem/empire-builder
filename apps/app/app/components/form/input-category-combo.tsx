@@ -58,7 +58,7 @@ function InputCategoryCombo<T extends Choice>(
               ref={ref}
               data-variant={variant}
               className="w-full border-none bg-stone-50 py-2 pl-3 pr-10 text-sm leading-5 text-stone-600 focus:bg-white focus:text-stone-900 focus:ring-0 data-[variant=sm]:p-1 dark:bg-stone-700 dark:text-stone-400 dark:placeholder:text-stone-400 dark:focus:text-stone-200 "
-              displayValue={(choice: Choice) => choice?.name}
+              displayValue={(choice: Choice) => `${choice.category}: ${choice?.name}`}
               onChange={(event) => setQuery(event.target.value)}
               {...props}
             />
