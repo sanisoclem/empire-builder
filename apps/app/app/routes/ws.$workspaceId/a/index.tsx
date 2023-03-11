@@ -17,7 +17,7 @@ export const loader = async (args: DataFunctionArgs) => {
   return {
     accounts: accounts.map((a) => ({
       ...a,
-      balance: balances.accounts[a.id.toString()] ?? 0
+      balance: balances[a.currency_id]?.accounts[a.id.toString()] ?? 0
     }))
   };
 };

@@ -38,7 +38,7 @@ export default function () {
     { editing: true; editedId: number | null } | { editing: false }
   >({ editing: false });
   const account = loadData.accounts.find((a) => a.id === accountId)!;
-  const balance = loadData.balances.accounts[account.id.toString()] ?? 0;
+  const balance = loadData.balances[account.currency_id]?.accounts[account.id.toString()] ?? 0;
   const ttt = loadData.txns.reduce(
     ([bal, acc], t) =>
       [

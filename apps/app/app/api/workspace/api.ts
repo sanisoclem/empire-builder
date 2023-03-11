@@ -4,6 +4,14 @@ import { DbClient } from 'db-totality';
 import { DataFunctionArgs } from '@remix-run/server-runtime';
 import { z } from 'zod';
 import { mapNonEmpty } from '~api/array';
+import {
+  addDraft,
+  addExchange,
+  addExternal,
+  addTransfer,
+  ledgerBalanceSchema,
+  verifyBalance
+} from './balance';
 
 interface OnboardingRequest {
   userId: string;
@@ -38,59 +46,6 @@ const txnDataSchema = z
   ])
   .array()
   .nonempty();
-
-const ledgerBalanceSchema = z.object({
-  accounts: z.record(z.number()),
-  buckets: z.record(z.record(z.number())),
-  floating: z.record(z.number())
-});
-const blankLedgerBalance = {
-  accounts: {},
-  buckets: {},
-  floating: {}
-};
-
-const addAccountBalance = (
-  bal: z.infer<typeof ledgerBalanceSchema>,
-  accountId: string,
-  delta: number
-) => {
-  if (accountId in bal.accounts) {
-    bal.accounts[accountId] += delta;
-  } else {
-    bal.accounts[accountId] = delta;
-  }
-  return bal;
-};
-const addBucketBalance = (
-  bal: z.infer<typeof ledgerBalanceSchema>,
-  bucketId: string,
-  currency: string,
-  delta: number
-) => {
-  if (bucketId in bal.buckets) {
-    if (currency in bal.buckets[bucketId]) {
-      bal.buckets[bucketId][currency] += delta;
-    } else {
-      bal.buckets[bucketId][currency] = delta;
-    }
-  } else {
-    bal.buckets[bucketId] = { [currency]: delta };
-  }
-  return bal;
-};
-const addFloatingBalance = (
-  bal: z.infer<typeof ledgerBalanceSchema>,
-  currency: string,
-  delta: number
-) => {
-  if (currency in bal.floating) {
-    bal.floating[currency] += delta;
-  } else {
-    bal.floating[currency] = delta;
-  }
-  return bal;
-};
 
 export class WorkspaceClient {
   private dbClient: DbClient;
@@ -272,9 +227,7 @@ export class WorkspaceClient {
 
     return [
       accounts,
-      balance?.ledger_balance
-        ? ledgerBalanceSchema.parse(balance.ledger_balance)
-        : blankLedgerBalance
+      balance?.ledger_balance ? ledgerBalanceSchema.parse(balance.ledger_balance) : {}
     ] as const;
   }
 
@@ -445,32 +398,57 @@ export class WorkspaceClient {
         });
 
         const bal =
-          latestBalance === null
-            ? blankLedgerBalance
-            : ledgerBalanceSchema.parse(latestBalance.ledger_balance);
+          latestBalance === null ? {} : ledgerBalanceSchema.parse(latestBalance.ledger_balance);
 
-        txn.data.forEach((d) => {
+        for (let i = 0; i < txn.data.length; i++) {
+          const d = txn.data[i];
           switch (d.type) {
             case 'draft':
-              addAccountBalance(bal, txn.accountId.toString(), d.amount);
-              addFloatingBalance(bal, account.currency_id, d.amount * -1);
+              addDraft(bal, txn.accountId.toString(), account.currency_id, d.amount);
               break;
             case 'external':
-              addAccountBalance(bal, txn.accountId.toString(), d.amount);
-              addBucketBalance(bal, d.bucketId.toString(), account.currency_id, d.amount * -1);
-              break;
-            case 'transfer':
-              addAccountBalance(bal, txn.accountId.toString(), d.amount);
-              addAccountBalance(
+              addExternal(
                 bal,
-                d.otherAccountId.toString(),
-                d.otherAmount !== null
-                  ? d.otherAmount * (Math.abs(d.amount) / (d.amount * -1))
-                  : d.amount * -1
+                txn.accountId.toString(),
+                d.bucketId.toString(),
+                account.currency_id,
+                d.amount
               );
               break;
+            case 'transfer':
+              const otherAccount = await c.account.findUniqueOrThrow({
+                where: {
+                  workspace_id_id: {
+                    id: d.otherAccountId,
+                    workspace_id: fromCompressedId(workspaceId)
+                  }
+                }
+              });
+              if (otherAccount.currency_id !== account.currency_id) {
+                if (!d.otherAmount) throw new Error('Other amount must be specified');
+                addExchange(
+                  bal,
+                  txn.accountId.toString(),
+                  account.currency_id,
+                  d.otherAccountId.toString(),
+                  otherAccount.currency_id,
+                  d.amount,
+                  Math.abs(d.otherAmount)
+                );
+              } else {
+                addTransfer(
+                  bal,
+                  txn.accountId.toString(),
+                  d.otherAccountId.toString(),
+                  account.currency_id,
+                  d.amount
+                );
+              }
+              break;
           }
-        });
+        }
+        verifyBalance(bal);
+
         const { id } = await c.balance.create({
           data: {
             workspace_id: fromCompressedId(workspaceId),
@@ -567,49 +545,104 @@ export class WorkspaceClient {
         const bal = ledgerBalanceSchema.parse(latestBalance.ledger_balance);
         const existinTxnData = txnDataSchema.parse(existingTxn.data);
 
-        existinTxnData.forEach((d) => {
+        for (let i = 0; i < existinTxnData.length; i++) {
+          const d = existinTxnData[i];
           switch (d.type) {
             case 'draft':
-              addAccountBalance(bal, d.accountId.toString(), d.amount * -1);
-              addFloatingBalance(bal, account.currency_id, d.amount * -1);
+              addDraft(bal, txn.accountId.toString(), account.currency_id, d.amount * -1);
               break;
             case 'external':
-              addAccountBalance(bal, d.accountId.toString(), d.amount * -1);
-              addBucketBalance(bal, d.bucketId.toString(), account.currency_id, d.amount);
-              break;
-            case 'transfer':
-              addAccountBalance(bal, d.accountId.toString(), d.amount * -1);
-              addAccountBalance(
+              addExternal(
                 bal,
-                d.otherAccountId.toString(),
-                d.otherAmount !== null ? d.otherAmount * (Math.abs(d.amount) / d.amount) : d.amount
+                txn.accountId.toString(),
+                d.bucketId.toString(),
+                account.currency_id,
+                d.amount * -1
               );
               break;
+            case 'transfer':
+              const otherAccount = await c.account.findUniqueOrThrow({
+                where: {
+                  workspace_id_id: {
+                    id: d.otherAccountId,
+                    workspace_id: fromCompressedId(workspaceId)
+                  }
+                }
+              });
+              if (otherAccount.currency_id !== account.currency_id) {
+                if (!d.otherAmount) throw new Error('Other amount must be specified');
+                addExchange(
+                  bal,
+                  txn.accountId.toString(),
+                  account.currency_id,
+                  d.otherAccountId.toString(),
+                  otherAccount.currency_id,
+                  d.amount * -1,
+                  Math.abs(d.otherAmount)
+                );
+              } else {
+                addTransfer(
+                  bal,
+                  txn.accountId.toString(),
+                  d.otherAccountId.toString(),
+                  account.currency_id,
+                  d.amount * -1
+                );
+              }
+              break;
           }
-        });
+        }
+        verifyBalance(bal);
 
-        txn.data.forEach((d) => {
+        for (let i = 0; i < txn.data.length; i++) {
+          const d = txn.data[i];
           switch (d.type) {
             case 'draft':
-              addAccountBalance(bal, txn.accountId.toString(), d.amount);
-              addFloatingBalance(bal, account.currency_id, d.amount * 1);
+              addDraft(bal, txn.accountId.toString(), account.currency_id, d.amount);
               break;
             case 'external':
-              addAccountBalance(bal, txn.accountId.toString(), d.amount);
-              addBucketBalance(bal, d.bucketId.toString(), account.currency_id, d.amount * -1);
-              break;
-            case 'transfer':
-              addAccountBalance(bal, txn.accountId.toString(), d.amount);
-              addAccountBalance(
+              addExternal(
                 bal,
-                d.otherAccountId.toString(),
-                d.otherAmount !== null
-                  ? d.otherAmount * (Math.abs(d.amount) / (d.amount * -1))
-                  : d.amount * -1
+                txn.accountId.toString(),
+                d.bucketId.toString(),
+                account.currency_id,
+                d.amount
               );
               break;
+            case 'transfer':
+              const otherAccount = await c.account.findUniqueOrThrow({
+                where: {
+                  workspace_id_id: {
+                    id: d.otherAccountId,
+                    workspace_id: fromCompressedId(workspaceId)
+                  }
+                }
+              });
+              if (otherAccount.currency_id !== account.currency_id) {
+                if (!d.otherAmount) throw new Error('Other amount must be specified');
+                addExchange(
+                  bal,
+                  txn.accountId.toString(),
+                  account.currency_id,
+                  d.otherAccountId.toString(),
+                  otherAccount.currency_id,
+                  d.amount,
+                  Math.abs(d.otherAmount)
+                );
+              } else {
+                addTransfer(
+                  bal,
+                  txn.accountId.toString(),
+                  d.otherAccountId.toString(),
+                  account.currency_id,
+                  d.amount
+                );
+              }
+              break;
           }
-        });
+        }
+        verifyBalance(bal);
+
         const { id } = await c.balance.create({
           data: {
             workspace_id: fromCompressedId(workspaceId),
