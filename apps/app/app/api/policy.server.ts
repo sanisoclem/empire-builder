@@ -10,6 +10,16 @@ export const requireAccountId = (params: Params) =>
     z.object({ workspaceId: z.string(), accountId: z.string().transform(Number) })
   );
 
+export const requireTxnId = (params: Params) =>
+  requireParameters(
+    params,
+    z.object({
+      workspaceId: z.string(),
+      txnId: z.string().transform(Number),
+      accountId: z.string().transform(Number)
+    })
+  );
+
 export const requireParameters = <T extends z.ZodTypeAny>(
   params: Params,
   schema: T

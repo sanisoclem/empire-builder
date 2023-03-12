@@ -84,6 +84,18 @@ export default function () {
 
   const handleImport = () => modals.importTransactions(workspaceId, accountId, currency.precision);
 
+  const handleDelete = (txnId: number) => {
+    fetcher.submit(
+      {},
+      {
+        action: ROUTES.workspace(workspaceId)
+          .account.item(accountId.toString())
+          .txn(txnId.toString()).delete,
+        method: 'delete'
+      }
+    );
+  };
+
   const handleSaveTxn = (t: FirstParam<FirstParam<typeof TxnList>['onSubmit']>) => {
     if (!editMode.editing) return;
 
@@ -117,12 +129,12 @@ export default function () {
       <nav className="flex h-24 items-center justify-between px-4 py-6">
         <PageHeader>{account.name}</PageHeader>
         <div className="flex justify-end gap-6">
-        <Button type="button" onClick={handleImport}>
-          Import QIF
-        </Button>
-        <Button type="button" onClick={handlePostTransaction}>
-          Post Transaction
-        </Button>
+          <Button type="button" onClick={handleImport}>
+            Import QIF
+          </Button>
+          <Button type="button" onClick={handlePostTransaction}>
+            Post Transaction
+          </Button>
         </div>
       </nav>
       <div className="h-[calc(100vh-10rem)] w-full overflow-auto">
@@ -139,6 +151,7 @@ export default function () {
           editTxnId={editMode.editing ? editMode.editedId : null}
           onCancel={handleCancel}
           onRowEdit={handleEdit}
+          onDelete={handleDelete}
         />
       </div>
     </div>

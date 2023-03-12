@@ -22,6 +22,7 @@ type Props = {
   txns: Array<Txn>;
   onRowEdit?: (v: FirstParam<typeof TxnRow>['txn']) => void;
   onSubmit?: (v: z.infer<typeof formSchema>) => void;
+  onDelete?: (txnId: number) => void;
   onCancel?: () => void;
 };
 
@@ -36,7 +37,8 @@ export default function TxnList({
   isLoading,
   onSubmit,
   onCancel,
-  onRowEdit
+  onRowEdit,
+  onDelete
 }: Props) {
   const account = accounts.find((a) => a.id === accountId)!;
   const currency = currencies.find((c) => c.id === account.currency)!;
@@ -127,6 +129,7 @@ export default function TxnList({
             categories={categories}
             onCancel={onCancel}
             onSubmit={handleSubmitTxn}
+            onDelete={onDelete}
           />
         )}
         {txns.map((txn) => (
@@ -140,6 +143,7 @@ export default function TxnList({
                 categories={categories}
                 onCancel={onCancel}
                 onSubmit={handleSubmitTxn}
+                onDelete={onDelete}
               />
             )}
             {(!editMode || editTxnId !== txn.txnId) && (
