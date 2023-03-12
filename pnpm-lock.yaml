@@ -40,6 +40,7 @@ importers:
       '@vercel/analytics': ^0.1.10
       '@vercel/remix-entry-server': ^0.1.0
       autoprefixer: ^10.4.14
+      date-fns: ^2.29.3
       db-totality: workspace:*
       decimal.js: ^10.4.3
       dnd-core: ^16.0.1
@@ -52,6 +53,7 @@ importers:
       react-dnd: ^16.0.1
       react-dnd-html5-backend: ^16.0.1
       react-dom: ^18.2.0
+      react-dropzone: ^14.2.3
       react-hook-form: ^7.43.4
       react-number-format: ^5.1.4
       redux: ^4.2.1
@@ -73,6 +75,7 @@ importers:
       '@remix-run/server-runtime': 1.14.0
       '@vercel/analytics': 0.1.10_react@18.2.0
       '@vercel/remix-entry-server': 0.1.0_react@18.2.0
+      date-fns: 2.29.3
       db-totality: link:../../packages/db-totality
       decimal.js: 10.4.3
       dnd-core: 16.0.1
@@ -83,6 +86,7 @@ importers:
       react-dnd: 16.0.1_pmekkgnqduwlme35zpnqhenc34
       react-dnd-html5-backend: 16.0.1
       react-dom: 18.2.0_react@18.2.0
+      react-dropzone: 14.2.3_react@18.2.0
       react-hook-form: 7.43.4_react@18.2.0
       react-number-format: 5.1.4_biqbaboplfbrettd7655fr4n2y
       redux: 4.2.1
@@ -3398,6 +3402,11 @@ packages:
     resolution: {integrity: sha512-tLRNUXati5MFePdAk8dw7Qt7DpxPB60ofAgn8WRhW6a2rcimZnYBP9oxHiv0OHy+Wz7kPMG+t4LGdt31+4EmGg==}
     dev: false
 
+  /attr-accept/2.2.2:
+    resolution: {integrity: sha512-7prDjvt9HmqiZ0cl5CRjtS84sEyhsHP2coDkaZKRKVfCDo9s7iw7ChVmar78Gu9pC4SoR/28wFu/G5JJhTnqEg==}
+    engines: {node: '>=4'}
+    dev: false
+
   /autoprefixer/10.4.13_postcss@8.4.21:
     resolution: {integrity: sha512-49vKpMqcZYsJjwotvt4+h/BCjJVnhGwcLpDt5xkcaOG3eLrG/HUYLagrihYsQ+qrIBgIzX1Rw7a6L8I/ZA1Atg==}
     engines: {node: ^10 || ^12 || >=14}
@@ -4026,6 +4035,11 @@ packages:
   /data-uri-to-buffer/4.0.1:
     resolution: {integrity: sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==}
     engines: {node: '>= 12'}
+    dev: false
+
+  /date-fns/2.29.3:
+    resolution: {integrity: sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==}
+    engines: {node: '>=0.11'}
     dev: false
 
   /deasync/0.1.28:
@@ -5379,6 +5393,13 @@ packages:
     engines: {node: ^10.12.0 || >=12.0.0}
     dependencies:
       flat-cache: 3.0.4
+
+  /file-selector/0.6.0:
+    resolution: {integrity: sha512-QlZ5yJC0VxHxQQsQhXvBaC7VRJ2uaxTf+Tfpu4Z/OcVQJVpZO+DGU0rkoVW5ce2SccxugvpBJoMvUs59iILYdw==}
+    engines: {node: '>= 12'}
+    dependencies:
+      tslib: 2.4.1
+    dev: false
 
   /file-uri-to-path/1.0.0:
     resolution: {integrity: sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==}
@@ -8347,6 +8368,18 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
+
+  /react-dropzone/14.2.3_react@18.2.0:
+    resolution: {integrity: sha512-O3om8I+PkFKbxCukfIR3QAGftYXDZfOE2N1mr/7qebQJHs7U+/RSL/9xomJNpRg9kM5h9soQSdf0Gc7OHF5Fug==}
+    engines: {node: '>= 10.13'}
+    peerDependencies:
+      react: '>= 16.8 || 18.0.0'
+    dependencies:
+      attr-accept: 2.2.2
+      file-selector: 0.6.0
+      prop-types: 15.8.1
+      react: 18.2.0
     dev: false
 
   /react-hook-form/7.43.4_react@18.2.0:

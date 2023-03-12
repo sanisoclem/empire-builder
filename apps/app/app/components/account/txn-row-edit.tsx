@@ -35,6 +35,7 @@ type TxEditProps = {
   >;
   txn?: Txn;
   onSubmit?: (v: z.infer<typeof formSchema>) => void;
+  onDelete?: (txnId: number) => void;
   onCancel?: () => void;
 };
 const toQuantized = (v: string | number, precision: number) => {
@@ -59,6 +60,7 @@ export default function TxnEdit({
   onCancel,
   currency,
   onSubmit,
+  onDelete,
   precision,
   isLoading
 }: TxEditProps) {
@@ -246,6 +248,15 @@ export default function TxnEdit({
       <tr>
         <td colSpan={7} className="p-2">
           <div className="flex justify-center gap-x-2">
+            {txn?.txnId !== undefined && <Button
+              type="button"
+              className="w-28 !p-1 text-center"
+              variant="danger"
+              disabled={isLoading}
+              onClick={() => onDelete?.(txn.txnId)}
+            >
+              Delete
+            </Button>}
             <Button
               type="button"
               className="w-28 !p-1 text-center"

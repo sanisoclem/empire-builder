@@ -315,7 +315,8 @@ export class WorkspaceClient {
             ]
           },
           {
-            superseded_by: null
+            superseded_by: null,
+            deleted: false
           }
         ]
       }
@@ -345,6 +346,7 @@ export class WorkspaceClient {
     }));
   }
 
+  // TODO: refactor repetitive txn code
   async postTransaction(
     workspaceId: string,
     txn: {
@@ -478,6 +480,7 @@ export class WorkspaceClient {
             date: txn.date,
             notes: txn.note,
             balance: id,
+            deleted: false,
             data: txnDataSchema.parse(txn.data.map((d) => ({ ...d, accountId: txn.accountId }))),
             superseded_by: null
           }
@@ -672,8 +675,284 @@ export class WorkspaceClient {
             workspace_id: existingTxn.workspace_id,
             date: txn.date,
             notes: txn.note,
+            deleted: false,
             balance: id,
             data: txnDataSchema.parse(txn.data.map((d) => ({ ...d, accountId: txn.accountId }))),
+            superseded_by: null
+          }
+        });
+        await c.transaction.update({
+          where: {
+            workspace_id_id: {
+              id: txnId,
+              workspace_id: fromCompressedId(workspaceId)
+            }
+          },
+          data: {
+            superseded_by: newTxnId
+          }
+        });
+      },
+      { isolationLevel: 'RepeatableRead' }
+    );
+  }
+
+  async postTransactions(
+    workspaceId: string,
+    accountId: number,
+    txns: Array<{
+      date: Date;
+      note: string;
+      data: NonEmptyArray<
+        | {
+            type: 'draft';
+            amount: number;
+          }
+        | {
+            type: 'transfer';
+            otherAccountId: number;
+            otherAmount: number | null;
+            amount: number;
+          }
+        | {
+            type: 'external';
+            bucketId: number;
+            amount: number;
+            payee: string;
+          }
+      >;
+    }>
+  ) {
+    const { customClaims } = await requireOnboarded(this.args);
+    if (!customClaims.workspaces.includes(workspaceId))
+      throw new Response('Unauthorized', { status: 403 });
+
+    await this.dbClient.client.$transaction(
+      async (c) => {
+        const latestBalance = await c.balance.findFirst({
+          where: {
+            workspace_id: fromCompressedId(workspaceId),
+            superseded_by: null
+          }
+        });
+        const account = await c.account.findUniqueOrThrow({
+          where: {
+            workspace_id_id: {
+              id: accountId,
+              workspace_id: fromCompressedId(workspaceId)
+            }
+          }
+        });
+
+        const bal =
+          latestBalance === null ? {} : ledgerBalanceSchema.parse(latestBalance.ledger_balance);
+
+        for (let ti = 0; ti < txns.length; ti++) {
+          const txn = txns[ti];
+          for (let i = 0; i < txn.data.length; i++) {
+            const d = txn.data[i];
+            switch (d.type) {
+              case 'draft':
+                addDraft(bal, accountId.toString(), account.currency_id, d.amount);
+                break;
+              case 'external':
+                addExternal(
+                  bal,
+                  accountId.toString(),
+                  d.bucketId.toString(),
+                  account.currency_id,
+                  d.amount
+                );
+                break;
+              case 'transfer':
+                const otherAccount = await c.account.findUniqueOrThrow({
+                  where: {
+                    workspace_id_id: {
+                      id: d.otherAccountId,
+                      workspace_id: fromCompressedId(workspaceId)
+                    }
+                  }
+                });
+                if (otherAccount.currency_id !== account.currency_id) {
+                  if (!d.otherAmount) throw new Error('Other amount must be specified');
+                  addExchange(
+                    bal,
+                    accountId.toString(),
+                    account.currency_id,
+                    d.otherAccountId.toString(),
+                    otherAccount.currency_id,
+                    d.amount,
+                    Math.abs(d.otherAmount)
+                  );
+                } else {
+                  addTransfer(
+                    bal,
+                    accountId.toString(),
+                    d.otherAccountId.toString(),
+                    account.currency_id,
+                    d.amount
+                  );
+                }
+                break;
+            }
+          }
+        }
+        verifyBalance(bal);
+
+        const { id } = await c.balance.create({
+          data: {
+            workspace_id: fromCompressedId(workspaceId),
+            budget_balance: latestBalance?.budget_balance ?? {},
+            ledger_balance: bal,
+            superseded_by: null
+          }
+        });
+        if (latestBalance !== null) {
+          await c.balance.update({
+            where: {
+              workspace_id_id: {
+                id: latestBalance.id,
+                workspace_id: fromCompressedId(workspaceId)
+              }
+            },
+            data: {
+              superseded_by: id
+            }
+          });
+        }
+        const createAt = new Date();
+        await c.transaction.createMany({
+          data: txns.map((txn) => ({
+            create_at: createAt,
+            created_by: fromCompressedId(customClaims.appUserId),
+            workspace_id: fromCompressedId(workspaceId),
+            date: txn.date,
+            notes: txn.note,
+            deleted: false,
+            balance: id,
+            data: txnDataSchema.parse(txn.data.map((d) => ({ ...d, accountId: accountId }))),
+            superseded_by: null
+          }))
+        });
+      },
+      { isolationLevel: 'RepeatableRead' }
+    );
+  }
+
+  async deleteTransaction(workspaceId: string, accountId: number, txnId: number) {
+    const { customClaims } = await requireOnboarded(this.args);
+    if (!customClaims.workspaces.includes(workspaceId))
+      throw new Response('Unauthorized', { status: 403 });
+
+    await this.dbClient.client.$transaction(
+      async (c) => {
+        const txn = await c.transaction.findFirstOrThrow({
+          where: {
+            workspace_id: fromCompressedId(workspaceId),
+            superseded_by: null,
+            id: txnId
+          }
+        });
+        const latestBalance = await c.balance.findFirstOrThrow({
+          where: {
+            workspace_id: fromCompressedId(workspaceId),
+            superseded_by: null
+          }
+        });
+        const account = await c.account.findUniqueOrThrow({
+          where: {
+            workspace_id_id: {
+              id: accountId,
+              workspace_id: fromCompressedId(workspaceId)
+            }
+          }
+        });
+
+        const bal = ledgerBalanceSchema.parse(latestBalance.ledger_balance);
+        const existinTxnData = txnDataSchema.parse(txn.data);
+
+        for (let i = 0; i < existinTxnData.length; i++) {
+          const d = existinTxnData[i];
+          switch (d.type) {
+            case 'draft':
+              addDraft(bal, accountId.toString(), account.currency_id, d.amount * -1);
+              break;
+            case 'external':
+              addExternal(
+                bal,
+                accountId.toString(),
+                d.bucketId.toString(),
+                account.currency_id,
+                d.amount * -1
+              );
+              break;
+            case 'transfer':
+              const otherAccount = await c.account.findUniqueOrThrow({
+                where: {
+                  workspace_id_id: {
+                    id: d.otherAccountId,
+                    workspace_id: fromCompressedId(workspaceId)
+                  }
+                }
+              });
+              if (otherAccount.currency_id !== account.currency_id) {
+                if (!d.otherAmount) throw new Error('Other amount must be specified');
+                addExchange(
+                  bal,
+                  accountId.toString(),
+                  account.currency_id,
+                  d.otherAccountId.toString(),
+                  otherAccount.currency_id,
+                  d.amount * -1,
+                  Math.abs(d.otherAmount)
+                );
+              } else {
+                addTransfer(
+                  bal,
+                  accountId.toString(),
+                  d.otherAccountId.toString(),
+                  account.currency_id,
+                  d.amount * -1
+                );
+              }
+              break;
+          }
+        }
+        verifyBalance(bal);
+
+        const { id } = await c.balance.create({
+          data: {
+            workspace_id: fromCompressedId(workspaceId),
+            budget_balance: latestBalance?.budget_balance ?? {},
+            ledger_balance: bal,
+            superseded_by: null
+          }
+        });
+        if (latestBalance !== null) {
+          await c.balance.update({
+            where: {
+              workspace_id_id: {
+                id: latestBalance.id,
+                workspace_id: fromCompressedId(workspaceId)
+              }
+            },
+            data: {
+              superseded_by: id
+            }
+          });
+        }
+
+        const { id: newTxnId } = await c.transaction.create({
+          data: {
+            create_at: txn.create_at,
+            created_by: txn.created_by,
+            workspace_id: txn.workspace_id,
+            deleted: true,
+            date: txn.date,
+            notes: txn.notes,
+            meta: txn.meta ?? {},
+            data: txn.data ?? {},
+            balance: id,
             superseded_by: null
           }
         });

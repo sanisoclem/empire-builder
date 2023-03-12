@@ -1,10 +1,12 @@
 import { atom, useAtom } from 'jotai';
 import { accountModalAtom, AccountModalState, Currency } from '~components/modal/account';
 import { bucketModalAtom, BucketModalState } from '~components/modal/bucket';
+import { txnImportModalAtom } from '~components/modal/txn-import';
 
 export const useModal = () => {
   const [, setAccountModalState] = useAtom(accountModalAtom);
   const [, setBucketModalState] = useAtom(bucketModalAtom);
+  const [, setTxnImportModalState] = useAtom(txnImportModalAtom);
 
   return {
     newAccount: (currencies: Currency[], workspaceId: string) =>
@@ -39,6 +41,18 @@ export const useModal = () => {
         workspaceId,
         editing: bucket,
         title: 'Edit income or expense bucket'
-      }))
+      })),
+    importTransactions: (workspaceId: string, accountId: number, precision: number) =>
+      setTxnImportModalState((s) =>
+        s.isLoading
+          ? s
+          : {
+              ...s,
+              open: true,
+              workspaceId,
+              precision,
+              accountId
+            }
+      )
   };
 };

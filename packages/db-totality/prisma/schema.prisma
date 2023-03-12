@@ -103,8 +103,10 @@ model transaction {
   date                      DateTime     @db.Date
   notes                     String?
   data                      Json         @db.JsonB
+  meta                      Json         @default("{}") @db.JsonB
   created_by                String       @db.Uuid
   create_at                 DateTime     @db.Date
+  deleted                   Boolean      @default(false) @db.Boolean
   superseded_by             Int?
   balance                   Int
   affected_balance          balance      @relation("transaction_balance_workspace_idTobalance", fields: [balance, workspace_id], references: [id, workspace_id], onUpdate: Restrict)

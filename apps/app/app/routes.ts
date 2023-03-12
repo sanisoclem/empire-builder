@@ -52,7 +52,11 @@ export const ROUTES = route('/', {
       item: parameterizedRoute((accountId) => `${accountId}/`, {
         transactions: '',
         update: 'update',
-        postTransaction: 'post-txn'
+        postTransaction: 'post-txn',
+        postTransactions: 'post-txns',
+        txn: parameterizedRoute((txnId) => `del/${txnId}/`, {
+          delete: ''
+        })
       })
     }),
     bucket: route('b/', {
