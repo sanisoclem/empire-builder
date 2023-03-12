@@ -5,13 +5,14 @@ import { Fragment } from 'react';
 export const createModal =
   <T extends { open: boolean; title: string }>(
     Modal: (p: T) => JSX.Element,
-    atom: PrimitiveAtom<T>
+    atom: PrimitiveAtom<T>,
+    canClose?: (v: T) => boolean
   ) =>
   () => {
     const [state, setState] = useAtom(atom);
 
     const handleClose = () => {
-      setState((s) => ({ ...s, open: false }));
+      setState((s) => canClose === undefined || canClose(s) ? { ...s, open: false } : s);
     };
     return (
       <>

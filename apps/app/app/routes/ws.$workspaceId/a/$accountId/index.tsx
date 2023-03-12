@@ -10,6 +10,7 @@ import TxnList from '~components/account/txn-list';
 import { postTxnPayloadSchema } from './post-txn';
 import { mapNonEmpty } from '~api/array';
 import { Txn } from '~components/account/txn-form-schema';
+import { useModal } from '~hooks';
 
 export const loader = async (args: DataFunctionArgs) => {
   const { workspaceId, accountId } = requireAccountId(args.params);
@@ -33,11 +34,13 @@ export const loader = async (args: DataFunctionArgs) => {
 export default function () {
   const { workspaceId, accountId, currencies, ...loadData } =
     useLoaderData<ReturnTypePromise<typeof loader>>();
+  const modals = useModal();
   const fetcher = useFetcher();
   const [editMode, setEditMode] = useState<
     { editing: true; editedId: number | null } | { editing: false }
   >({ editing: false });
   const account = loadData.accounts.find((a) => a.id === accountId)!;
+  const currency = currencies.find((c) => c.id === account.currency_id)!;
   const balance = loadData.balances[account.currency_id]?.accounts[account.id.toString()] ?? 0;
   const ttt = loadData.txns.reduce(
     ([bal, acc], t) =>
@@ -79,6 +82,8 @@ export default function () {
     }
   }, [fetcher.state, fetcher.type]);
 
+  const handleImport = () => modals.importTransactions(workspaceId, accountId, currency.precision);
+
   const handleSaveTxn = (t: FirstParam<FirstParam<typeof TxnList>['onSubmit']>) => {
     if (!editMode.editing) return;
 
@@ -111,9 +116,14 @@ export default function () {
     <div className="w-full self-stretch bg-white dark:bg-stone-800">
       <nav className="flex h-24 items-center justify-between px-4 py-6">
         <PageHeader>{account.name}</PageHeader>
+        <div className="flex justify-end gap-6">
+        <Button type="button" onClick={handleImport}>
+          Import QIF
+        </Button>
         <Button type="button" onClick={handlePostTransaction}>
           Post Transaction
         </Button>
+        </div>
       </nav>
       <div className="h-[calc(100vh-10rem)] w-full overflow-auto">
         <TxnList

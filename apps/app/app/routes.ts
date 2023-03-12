@@ -52,7 +52,8 @@ export const ROUTES = route('/', {
       item: parameterizedRoute((accountId) => `${accountId}/`, {
         transactions: '',
         update: 'update',
-        postTransaction: 'post-txn'
+        postTransaction: 'post-txn',
+        postTransactions: 'post-txns'
       })
     }),
     bucket: route('b/', {
