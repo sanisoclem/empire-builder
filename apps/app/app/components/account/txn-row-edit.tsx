@@ -175,14 +175,7 @@ export default function TxnEdit({
             />
           </td>
           <td className="whitespace-nowrap px-1 py-2 font-medium text-stone-500">
-            {data[i]?.category?.type === 'bucket' && (
-              <Input
-                placeholder="payee"
-                variant="sm"
-                type="text"
-                {...register(`data.${i}.payee`)}
-              />
-            )}
+            <Input placeholder="payee" variant="sm" type="text" {...register(`data.${i}.payee`)} />
           </td>
           {i === 0 && (
             <td rowSpan={fields.length} className="h-full px-1 py-2 font-medium text-stone-500">
@@ -249,15 +242,17 @@ export default function TxnEdit({
       <tr>
         <td colSpan={7} className="p-2">
           <div className="flex justify-center gap-x-2">
-            {txn?.txnId !== undefined && <Button
-              type="button"
-              className="w-28 !p-1 text-center"
-              variant="danger"
-              disabled={isLoading}
-              onClick={() => onDelete?.(txn.txnId)}
-            >
-              Delete
-            </Button>}
+            {txn?.txnId !== undefined && (
+              <Button
+                type="button"
+                className="w-28 !p-1 text-center"
+                variant="danger"
+                disabled={isLoading}
+                onClick={() => onDelete?.(txn.txnId)}
+              >
+                Delete
+              </Button>
+            )}
             <Button
               type="button"
               className="w-28 !p-1 text-center"
