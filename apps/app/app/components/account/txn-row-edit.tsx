@@ -73,7 +73,7 @@ export default function TxnEdit({
           data: txn.data
             .map((d) =>
               d.type === 'draft'
-                ? { category: null, amount: d.amount }
+                ? { category: null, amount: d.amount, payee: d.payee }
                 : d.type === 'external'
                 ? {
                     category: categories.find(
@@ -87,7 +87,8 @@ export default function TxnEdit({
                       (c) => c.type === 'account' && c.accountId === d.otherAccountId
                     )!,
                     amount: d.amount,
-                    otherAmount: d.otherAmount
+                    otherAmount: d.otherAmount,
+                    payee: d.payee
                   }
             )
             .map((d) => ({
@@ -262,7 +263,7 @@ export default function TxnEdit({
               className="w-28 !p-1 text-center"
               variant="neutral"
               disabled={isLoading}
-              onClick={() => append({ amount: 0 })}
+              onClick={() => append({ amount: 0, payee: '' })}
             >
               Add Split
             </Button>

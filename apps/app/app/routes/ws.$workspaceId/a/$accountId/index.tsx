@@ -53,7 +53,8 @@ export default function () {
             balance: bal,
             date: new Date(t.date),
             notes: t.notes,
-            data: t.data
+            data: t.data,
+            meta: t.meta
           }
         ]
       ] as [number, Txn[]],
@@ -106,12 +107,13 @@ export default function () {
       {
         txnId: editMode.editedId === null ? undefined : editMode.editedId,
         note: t.notes,
-        date: t.date.toISOString(),
+        date: t.date,
         data: mapNonEmpty(t.data, (d) => {
           return {
             amount: d.amount,
-            ...(d.category?.type === 'bucket' && 'payee' in d
-              ? { type: 'external' as const, bucketId: d.category.bucketId, payee: d.payee }
+            payee: d.payee ?? '',
+            ...(d.category?.type === 'bucket'
+              ? { type: 'external' as const, bucketId: d.category.bucketId }
               : d.category?.type === 'account'
               ? {
                   type: 'transfer' as const,

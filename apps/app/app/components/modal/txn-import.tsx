@@ -44,30 +44,36 @@ function TxnImportModal() {
     maxFiles: 1
   });
   const fetcher = useFetcher();
-  const testFile = acceptedFiles.length > 0 ? acceptedFiles[0]! : null;
+  const importFile = acceptedFiles.length > 0 ? acceptedFiles[0]! : null;
 
   function handleImport() {
-    console.log(testFile, state);
-    if (testFile === null) return;
+    if (importFile === null) return;
     if (state.isLoading) return;
 
     const importInner = async () => {
       try {
         setState((s) => ({ ...s, isLoading: true }));
-        const text = await toText(testFile);
+        const text = await toText(importFile);
         const qif = parseQif(text, { format: 'uk' });
         const data: z.infer<typeof postTxnsPayloadSchema> = qif.items.map((i) => ({
           date: i.date ?? new Date(),
-          note: i.memo ?? '',
+          note: i.memo ?? i.reference ?? '',
           data: [
             {
               type: 'draft',
+              payee: i.payee ?? '',
               amount: new Decimal(10)
                 .pow(new Decimal(state.precision))
                 .mul(new Decimal(i.amount ?? 0))
                 .toNumber()
             }
-          ]
+          ],
+          meta: {
+            ...i.others.reduce((acc, v) => ({ ...acc, [v.type]: v.value }), {}),
+            payee: i.payee?.toString(),
+            memo: i.memo,
+            reference: i.reference
+          }
         }));
         submitJsonRequest(
           fetcher,
@@ -101,23 +107,22 @@ function TxnImportModal() {
       <div
         {...getRootProps({
           className:
-            'flex flex-col h-52 items-center justify-center border-4 border-dashed border-zinc-500 bg-violet-50 p-6 text-center'
+            'flex flex-col h-52 items-center justify-center borderborder-stone-500 bg-sky-50 p-6 text-center'
         })}
       >
         <input {...getInputProps()} />
-        {testFile !== null && (
+        {importFile !== null && (
           <>
             <div>
-              Test will be run on <span className="font-mono">{testFile.name}</span>{' '}
+              Importing <span className="font-mono">{importFile.name}</span>
             </div>
-            <div>Size: {testFile.size}</div>
           </>
         )}
-        {testFile === null && 'Drop test file here and click on "Run Test"'}
+        {importFile === null && 'Choose or drop file here and click Import'}
       </div>
       <Button
         type="button"
-        disabled={testFile === null}
+        disabled={importFile === null}
         isLoading={state.isLoading}
         onClick={handleImport}
       >

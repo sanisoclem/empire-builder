@@ -46,7 +46,7 @@ const FIELD_MAP: Record<string, QifItemField<keyof QifItem>> = {
 
 function parseDate(dateStr: string, format: keyof typeof DATE_FORMATS) {
   const formats = DATE_FORMATS[format];
-  const pars = (f: string) =>parse(dateStr, f, new Date())
+  const pars = (f: string) => parse(dateStr, f, new Date());
   const isValid = (d: Date | null) => d instanceof Date && !isNaN(d.getTime());
 
   const valids = formats.map(pars).filter(isValid);
@@ -87,10 +87,14 @@ export function parseQif(qif: string, options: QifOptions): QifFile {
       .substring(qif.indexOf('\n'))
       .split('^')
       .map((t) =>
-        t.split('\n').map((f) => ({
-          type: f[0],
-          value: f.substring(1)
-        }))
+        t
+          .split('\n')
+          .map((f) => f.trim())
+          .filter((f) => f !== '')
+          .map((f) => ({
+            type: f[0],
+            value: f.substring(1).trim()
+          }))
       )
       .map((i) => i.reduce((acc, v) => parseField(acc, v, options), { others: [] } as QifItem))
   };

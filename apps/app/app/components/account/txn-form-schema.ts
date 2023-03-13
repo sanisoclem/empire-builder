@@ -9,12 +9,14 @@ export type Txn = {
     | {
         type: 'draft';
         amount: number;
+        payee: string;
       }
     | {
         type: 'transfer';
         otherAccountId: number;
         otherAmount: number | null;
         amount: number;
+        payee: string;
       }
     | {
         type: 'external';
@@ -23,6 +25,7 @@ export type Txn = {
         payee: string;
       }
   >;
+  meta: Record<string, string | undefined>;
 };
 
 export const formSchema = z.object({
@@ -30,7 +33,7 @@ export const formSchema = z.object({
     .string()
     .transform((v) => new Date(v))
     .pipe(z.date()),
-  notes: z.string(),
+  notes: z.string().max(250),
   data: z
     .array(
       z.union([
@@ -45,6 +48,7 @@ export const formSchema = z.object({
             type: z.literal('account')
           }),
           amount: z.string().transform(Number).pipe(z.number()),
+          payee: z.string().max(250),
           otherAmount: z
             .string()
             .nullable()
@@ -61,11 +65,12 @@ export const formSchema = z.object({
             type: z.literal('bucket')
           }),
           amount: z.string().transform(Number).pipe(z.number()),
-          payee: z.string()
+          payee: z.string().max(250)
         }),
         z.object({
           category: z.null().optional(),
-          amount: z.string().transform(Number).pipe(z.number())
+          amount: z.string().transform(Number).pipe(z.number()),
+          payee: z.string().max(250)
         })
       ])
     )

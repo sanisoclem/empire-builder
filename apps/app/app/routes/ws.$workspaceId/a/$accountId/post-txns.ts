@@ -7,19 +7,21 @@ import { WorkspaceClient } from '~api/workspace/api';
 const txnDataSchema = z.union([
   z.object({
     type: z.literal('draft'),
-    amount: z.number().int()
+    amount: z.number().int(),
+    payee: z.string().max(250)
   }),
   z.object({
     type: z.literal('transfer'),
     otherAccountId: z.number(),
     otherAmount: z.number().int().nullable(),
-    amount: z.number().int()
+    amount: z.number().int(),
+    payee: z.string().max(250)
   }),
   z.object({
     type: z.literal('external'),
     bucketId: z.number(),
     amount: z.number().int(),
-    payee: z.string().max(100)
+    payee: z.string().max(250)
   })
 ]);
 
@@ -30,7 +32,8 @@ export const postTxnsPayloadSchema = z
       .transform((d) => new Date(d))
       .pipe(z.date()),
     note: z.string().max(250),
-    data: txnDataSchema.array().nonempty()
+    data: txnDataSchema.array().nonempty(),
+    meta: z.record(z.string().max(250).optional())
   })
   .array();
 

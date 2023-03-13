@@ -27,14 +27,16 @@ const txnDataSchema = z
     z.object({
       accountId: z.number(),
       type: z.literal('draft'),
-      amount: z.number().int()
+      amount: z.number().int(),
+      payee: z.string()
     }),
     z.object({
       type: z.literal('transfer'),
       accountId: z.number(),
       otherAccountId: z.number(),
       otherAmount: z.number().int().nullable(),
-      amount: z.number().int()
+      amount: z.number().int(),
+      payee: z.string()
     }),
     z.object({
       accountId: z.number(),
@@ -357,12 +359,14 @@ export class WorkspaceClient {
         | {
             type: 'draft';
             amount: number;
+            payee: string;
           }
         | {
             type: 'transfer';
             otherAccountId: number;
             otherAmount: number | null;
             amount: number;
+            payee: string;
           }
         | {
             type: 'external';
@@ -501,12 +505,14 @@ export class WorkspaceClient {
         | {
             type: 'draft';
             amount: number;
+            payee: string;
           }
         | {
             type: 'transfer';
             otherAccountId: number;
             otherAmount: number | null;
             amount: number;
+            payee: string;
           }
         | {
             type: 'external';
@@ -707,12 +713,14 @@ export class WorkspaceClient {
         | {
             type: 'draft';
             amount: number;
+            payee: string;
           }
         | {
             type: 'transfer';
             otherAccountId: number;
             otherAmount: number | null;
             amount: number;
+            payee: string;
           }
         | {
             type: 'external';
@@ -721,6 +729,7 @@ export class WorkspaceClient {
             payee: string;
           }
       >;
+      meta: Record<string, string | undefined>;
     }>
   ) {
     const { customClaims } = await requireOnboarded(this.args);
@@ -828,6 +837,7 @@ export class WorkspaceClient {
             workspace_id: fromCompressedId(workspaceId),
             date: txn.date,
             notes: txn.note,
+            meta: txn.meta,
             deleted: false,
             balance: id,
             data: txnDataSchema.parse(txn.data.map((d) => ({ ...d, accountId: accountId }))),
