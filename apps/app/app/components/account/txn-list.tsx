@@ -69,7 +69,7 @@ export default function TxnList({
     <form>
       <table className="relative min-w-full table-fixed divide-y divide-stone-200 dark:divide-stone-600">
         <colgroup className="w-40" />
-        <colgroup className="" />
+        <colgroup className=" min-w-[15rem]" />
         <colgroup className="w-40 2xl:w-80" />
         <colgroup className="w-60  2xl:w-80" />
         <colgroup className="w-36" />
