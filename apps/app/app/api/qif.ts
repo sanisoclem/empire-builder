@@ -13,8 +13,8 @@ type QifItem = {
 };
 
 const DATE_FORMATS = {
-  us: ['mm-dd-yyyyHH:MM:ss', 'mm-dd-yyyy', 'mm-dd-yy'],
-  uk: ['dd-mm-yyyyHH:MM:ss', 'dd-mm-yyyy', 'dd-mm-yy', 'dd/mm/yy']
+  us: ['MM-dd-yyyyHH:mm:ss', 'MM-dd-yyyy', 'MM-dd-yy'],
+  uk: ['dd-MM-yyyyHH:m:ss', 'dd-MM-yyyy', 'dd-MM-yy', 'dd/MM/yy']
 } as const;
 
 type QifOptions = {
@@ -49,7 +49,10 @@ function parseDate(dateStr: string, format: keyof typeof DATE_FORMATS) {
   const pars = (f: string) => parse(dateStr, f, new Date());
   const isValid = (d: Date | null) => d instanceof Date && !isNaN(d.getTime());
 
-  const valids = formats.map(pars).filter(isValid);
+  const valids = formats
+    .map(pars)
+    .map((d) => new Date(d.getTime() - d.getTimezoneOffset() * 60000))
+    .filter(isValid);
   if (valids.length === 0) throw new Error(`Invalid date ${dateStr}`);
 
   return valids[0];
