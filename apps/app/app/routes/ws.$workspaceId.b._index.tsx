@@ -5,7 +5,7 @@ import { WorkspaceClient } from '~api/workspace/api';
 import { Button, ClientOnly, Loader, PageHeader } from '~components';
 import BudgetList from '~components/account/budget-list';
 import { useLoaderDataStrict, useModal, useRouteData } from '~hooks';
-import { workspaceRouteData } from '../../ws.$workspaceId';
+import { workspaceRouteData } from './ws.$workspaceId';
 
 const loaderSchema = z.object({
   buckets: z.array(

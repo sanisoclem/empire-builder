@@ -1,13 +1,13 @@
-import { useFetcher, useLoaderData, useRouteLoaderData } from '@remix-run/react';
+import { useFetcher, useLoaderData } from '@remix-run/react';
 import { DataFunctionArgs } from '@remix-run/server-runtime';
 import { useEffect, useState } from 'react';
 import { ROUTES } from '~/routes';
 import { submitJsonRequest } from '~api/formData';
-import { requireAccountId, requireWorkspaceId } from '~api/policy.server';
+import { requireAccountId } from '~api/policy.server';
 import { WorkspaceClient } from '~api/workspace/api';
 import { Button, PageHeader } from '~components';
 import TxnList from '~components/account/txn-list';
-import { postTxnPayloadSchema } from './post-txn';
+import { postTxnPayloadSchema } from './ws.$workspaceId.a.$accountId.post-txn';
 import { mapNonEmpty } from '~api/array';
 import { Txn } from '~components/account/txn-form-schema';
 import { useModal } from '~hooks';

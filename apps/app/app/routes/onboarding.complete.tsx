@@ -1,6 +1,6 @@
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { z } from 'zod';
-import { CLERK_PROVIDER_TYPE, getAuth, requireAuthenticated } from '~api/auth';
+import { CLERK_PROVIDER_TYPE, requireAuthenticated } from '~api/auth';
 import { WorkspaceClient } from '~api/workspace/api';
 
 const payloadSchema = z.object({

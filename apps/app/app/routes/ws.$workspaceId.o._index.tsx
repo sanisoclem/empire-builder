@@ -5,7 +5,7 @@ import { WorkspaceClient } from '~api/workspace/api';
 import { Button, PageHeader } from '~components';
 import OtherAssetList from '~components/account/other-asset-list';
 import { useRouteData } from '~hooks';
-import { workspaceRouteData } from '../../ws.$workspaceId';
+import { workspaceRouteData } from './ws.$workspaceId';
 
 const loaderSchema = z.object({
   accounts: z.array(

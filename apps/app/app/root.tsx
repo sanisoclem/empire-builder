@@ -1,6 +1,6 @@
-import type { MetaFunction, LoaderFunction } from '@remix-run/node';
+import type { LoaderFunction, V2_MetaFunction } from '@remix-run/node';
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
-import { ClerkApp, ClerkCatchBoundary } from '@clerk/remix';
+import { ClerkApp, V2_ClerkErrorBoundary } from '@clerk/remix';
 import { rootAuthLoader } from '@clerk/remix/ssr.server';
 import styles from '~/tailwind.css';
 import { useTheme } from '~hooks';
@@ -10,13 +10,13 @@ export const loader: LoaderFunction = (args) => {
   return rootAuthLoader(args);
 };
 
-export const meta: MetaFunction = () => ({
+export const meta: V2_MetaFunction = () => [{
   charset: 'utf-8',
   title: 'Empire Builder',
   viewport: 'width=device-width,initial-scale=1'
-});
+}];
 
-export const CatchBoundary = ClerkCatchBoundary();
+export const ErrorBoundary = V2_ClerkErrorBoundary();
 
 export function links() {
   return [

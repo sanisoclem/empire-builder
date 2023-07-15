@@ -1,5 +1,5 @@
 import { useAuth } from '@clerk/remix';
-import { useFetcher, useNavigate, useTransition } from '@remix-run/react';
+import { useFetcher, useNavigate, useNavigation } from '@remix-run/react';
 import { DataFunctionArgs } from '@remix-run/server-runtime';
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
@@ -31,8 +31,8 @@ export default function CreateWorkspace() {
   const fetcher = useFetcher();
   const auth = useAuth();
   const navigate = useNavigate();
-  const transition = useTransition();
-  const isLoading = state === 'submitting' || transition.state !== 'idle';
+  const navigation = useNavigation();
+  const isLoading = state === 'submitting' || navigation.state !== 'idle';
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     if (state !== 'init') {

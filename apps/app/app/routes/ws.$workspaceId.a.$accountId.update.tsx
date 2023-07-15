@@ -1,6 +1,6 @@
 import { LoaderFunction } from '@remix-run/server-runtime';
 import { z } from 'zod';
-import { requireAccountId, requireParameters } from '~api/policy.server';
+import { requireAccountId } from '~api/policy.server';
 import { WorkspaceClient } from '~api/workspace/api';
 
 const payloadSchema = z.object({
