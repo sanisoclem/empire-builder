@@ -20,12 +20,12 @@
     "react": "^18.2.0"
   },
   "devDependencies": {
-    "@types/react": "^17.0.13",
-    "eslint": "^7.32.0",
+    "@types/react": "^18.2.15",
+    "eslint": "^8.45.0",
     "eslint-config-custom": "workspace:*",
-    "tailwind-config": "workspace:*",
     "react": "^18.2.0",
+    "tailwind-config": "workspace:*",
     "tsconfig": "workspace:*",
-    "tsup": "^6.2.3"
+    "tsup": "^6.7.0"
   }
 }
