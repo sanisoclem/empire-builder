@@ -1,16 +1,13 @@
 import {
-  BanknotesIcon,
   CalculatorIcon,
   ChartPieIcon,
   ChevronDoubleRightIcon,
   HomeModernIcon,
-  PresentationChartBarIcon,
   PresentationChartLineIcon,
-  RectangleGroupIcon,
   RectangleStackIcon
 } from '@heroicons/react/24/outline';
 import { ChevronDoubleLeftIcon } from '@heroicons/react/24/solid';
-import { Link, useLocation, useTransition } from '@remix-run/react';
+import { Link, useLocation, useNavigation } from '@remix-run/react';
 import { z } from 'zod';
 import { ROUTES } from '~/routes';
 import { useLocalStorageStrict } from '~hooks';
@@ -22,7 +19,7 @@ export type SidebarProps = {
 
 export default function Sidebar({ workspaceId, className, version, ...props }: SidebarProps) {
   const location = useLocation();
-  const transition = useTransition();
+  const navigation = useNavigation();
   const [expanded, setExpanded] = useLocalStorageStrict('sidebar', z.boolean(), true);
   const nav = [
     {
@@ -52,9 +49,9 @@ export default function Sidebar({ workspaceId, className, version, ...props }: S
     }
   ];
 
-  const navPending = transition.state !== 'idle';
+  const navPending = navigation.state !== 'idle';
   const currentPath = navPending
-    ? transition.location.pathname ?? location.pathname
+    ? navigation.location.pathname ?? location.pathname
     : location.pathname;
   const activeHref = nav
     .map<string>((l) => l.href)

@@ -1,7 +1,6 @@
 import { useFetcher } from '@remix-run/react';
 import { atom, useAtom } from 'jotai';
 import { useEffect } from 'react';
-import { Controller, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ROUTES } from '~/routes';
@@ -10,7 +9,7 @@ import { createModal } from './wrapper';
 import { useDropzone } from 'react-dropzone';
 import { parseQif } from '~api/qif';
 import { submitJsonRequest } from '~api/formData';
-import { postTxnsPayloadSchema } from '~/routes/ws.$workspaceId/a/$accountId/post-txns';
+import { postTxnsPayloadSchema } from '~/routes/ws.$workspaceId.a.$accountId.post-txns';
 import Decimal from 'decimal.js';
 
 export type TxnImportModalState = {

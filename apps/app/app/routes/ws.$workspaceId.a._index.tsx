@@ -7,7 +7,7 @@ import { WorkspaceClient } from '~api/workspace/api';
 import { Button, PageHeader } from '~components';
 import AccountList from '~components/account/account-list';
 import { useModal, useRouteData } from '~hooks';
-import { workspaceRouteData } from '../../ws.$workspaceId';
+import { workspaceRouteData } from './ws.$workspaceId';
 
 export const loader = async (args: DataFunctionArgs) => {
   const wsClient = new WorkspaceClient(args);

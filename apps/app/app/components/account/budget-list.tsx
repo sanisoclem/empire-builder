@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { ROUTES } from '~/routes';
-import { organizeBudgetPayloadSchema } from '~/routes/ws.$workspaceId/b/organize';
+import { organizeBudgetPayloadSchema } from '~/routes/ws.$workspaceId.b.organize';
 import { submitJsonRequest } from '~api/formData';
 import { ClientOnly, Loader } from '~components/base';
 import { useDebounce } from '~hooks';

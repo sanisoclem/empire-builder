@@ -1,6 +1,6 @@
 import { Transition } from '@headlessui/react';
-import { Outlet, useTransition } from '@remix-run/react';
-import { DataFunctionArgs, LoaderFunction, redirect } from '@remix-run/server-runtime';
+import { Outlet, useNavigation } from '@remix-run/react';
+import { DataFunctionArgs, redirect } from '@remix-run/server-runtime';
 import { z } from 'zod';
 import { CONFIG } from '~/config.server';
 import { ROUTES, ROUTE_DEFS } from '~/routes';
@@ -49,7 +49,7 @@ export const loader = async (args: DataFunctionArgs): Promise<z.infer<typeof loa
 export const workspaceRouteData = makeRouteData(ROUTE_DEFS.workspace, loaderSchema);
 
 export default function LedgerLayout() {
-  const transition = useTransition();
+  const navigation = useNavigation();
   const { workspaceId, workspaces, mode, version, ...user } = useLoaderDataStrict(loaderSchema);
 
   return (
@@ -60,7 +60,7 @@ export default function LedgerLayout() {
           <Topbar user={user} mode={mode} className="flex-none shadow" workspaces={workspaces} />
           <div className="relative flex-1 overflow-y-auto">
             <Transition
-              show={transition.state === 'loading'}
+              show={navigation.state === 'loading'}
               unmount={true}
               className="pointer-events-none absolute top-0 left-0 flex h-[calc(100vh-4rem)] w-full items-center justify-center"
               enter="transition-opacity duration-150 delay-500"
@@ -73,7 +73,7 @@ export default function LedgerLayout() {
               <Loader />
             </Transition>
             <Transition
-              show={transition.state !== 'loading'}
+              show={navigation.state !== 'loading'}
               enter="transition-opacity duration-150 delay-200"
               enterFrom="opacity-0"
               enterTo="opacity-100"

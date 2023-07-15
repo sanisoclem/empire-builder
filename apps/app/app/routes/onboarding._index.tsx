@@ -1,5 +1,5 @@
-import { useAuth, UserProfile } from '@clerk/remix';
-import { useFetcher, useNavigate, useTransition } from '@remix-run/react';
+import { useAuth } from '@clerk/remix';
+import { useFetcher, useNavigate, useNavigation } from '@remix-run/react';
 import { DataFunctionArgs, redirect } from '@remix-run/server-runtime';
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
@@ -34,8 +34,8 @@ export default function GetStarted() {
   const fetcher = useFetcher();
   const auth = useAuth();
   const navigate = useNavigate();
-  const transition = useTransition();
-  const isLoading = state === 'submitting' || transition.state !== 'idle';
+  const navigation = useNavigation();
+  const isLoading = state === 'submitting' || navigation.state !== 'idle';
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     if (state !== 'init') {

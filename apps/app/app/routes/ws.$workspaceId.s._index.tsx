@@ -4,7 +4,7 @@ import { requireWorkspaceId } from '~api/policy.server';
 import { WorkspaceClient } from '~api/workspace/api';
 import { Button, PageHeader } from '~components';
 import StockPortfolioList from '~components/account/stock-portfolio-list';
-import { useLoaderDataStrict, useRouteData } from '~hooks';
+import { useLoaderDataStrict } from '~hooks';
 
 const loaderSchema = z.object({
   accounts: z.array(

@@ -7,8 +7,18 @@ module.exports = {
   // assetsBuildDirectory: "public/build",
   // serverBuildPath: "build/index.js",
   // publicPath: "/build/",
+
+  // switch to ESM after v2 release
+  // see: https://github.com/remix-run/remix/issues/6272
+  //serverModuleFormat: "esm",
+  tailwind: true,
   future: {
-    unstable_postcss: true
+    v2_dev: true,
+    v2_errorBoundary: true,
+    v2_headers: true,
+    v2_meta: true,
+    v2_normalizeFormMethod: true,
+    v2_routeConvention: true
   },
   serverDependenciesToBundle: [
     'react-dnd',
