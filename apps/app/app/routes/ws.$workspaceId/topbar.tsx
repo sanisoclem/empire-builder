@@ -1,8 +1,7 @@
-import { PageHeader } from '../typography';
 import { UserButton } from '@clerk/remix';
 import { Popover, Transition } from '@headlessui/react';
+import { PageHeader } from '~components';
 import {
-  BanknotesIcon,
   MoonIcon,
   PlusCircleIcon,
   Squares2X2Icon,

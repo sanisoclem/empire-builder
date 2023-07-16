@@ -1,10 +1,5 @@
 import { Menu, Portal, Transition } from '@headlessui/react';
-import {
-  ArchiveBoxXMarkIcon,
-  BanknotesIcon,
-  EllipsisVerticalIcon,
-  PencilIcon
-} from '@heroicons/react/24/outline';
+import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { Fragment } from 'react';
 import { usePopper } from '~hooks';
 
