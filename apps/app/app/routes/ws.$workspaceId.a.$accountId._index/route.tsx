@@ -6,10 +6,10 @@ import { submitJsonRequest } from '~api/formData';
 import { requireAccountId } from '~api/policy.server';
 import { WorkspaceClient } from '~api/workspace/api';
 import { Button, PageHeader } from '~components';
-import TxnList from '~components/account/txn-list';
-import { postTxnPayloadSchema } from './ws.$workspaceId.a.$accountId.post-txn';
+import TxnList from './txn-list';
+import { postTxnPayloadSchema } from '../ws.$workspaceId.a.$accountId.post-txn/route';
 import { mapNonEmpty } from '~api/array';
-import { Txn } from '~components/account/txn-form-schema';
+import { Txn } from '~/routes/ws.$workspaceId.a.$accountId._index/txn-form-schema';
 import { useModal } from '~hooks';
 
 export const loader = async (args: DataFunctionArgs) => {

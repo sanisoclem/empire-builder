@@ -3,9 +3,9 @@ import { z } from 'zod';
 import { requireWorkspaceId } from '~api/policy.server';
 import { WorkspaceClient } from '~api/workspace/api';
 import { Button, ClientOnly, Loader, PageHeader } from '~components';
-import BudgetList from '~components/account/budget-list';
+import BudgetList from './budget-list';
 import { useLoaderDataStrict, useModal, useRouteData } from '~hooks';
-import { workspaceRouteData } from './ws.$workspaceId';
+import { workspaceRouteData } from '../ws.$workspaceId/route';
 
 const loaderSchema = z.object({
   buckets: z.array(

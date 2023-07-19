@@ -9,7 +9,7 @@ import { createModal } from './wrapper';
 import { useDropzone } from 'react-dropzone';
 import { parseQif } from '~api/qif';
 import { submitJsonRequest } from '~api/formData';
-import { postTxnsPayloadSchema } from '~/routes/ws.$workspaceId.a.$accountId.post-txns';
+import { postTxnsPayloadSchema } from '~/routes/ws.$workspaceId.a.$accountId.post-txns/route';
 import Decimal from 'decimal.js';
 
 export type TxnImportModalState = {

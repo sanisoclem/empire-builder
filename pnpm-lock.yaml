@@ -36,6 +36,7 @@ importers:
       '@tailwindcss/container-queries': ^0.1.1
       '@tailwindcss/forms': ^0.5.4
       '@types/react': ^18.2.15
+      '@types/react-command-palette': ^0.18.1
       '@types/react-dom': ^18.2.7
       '@vercel/analytics': ^1.0.1
       '@vercel/remix-entry-server': ^0.1.1
@@ -54,6 +55,7 @@ importers:
       react-dom: ^18.2.0
       react-dropzone: ^14.2.3
       react-hook-form: ^7.45.1
+      react-hotkeys-hook: ^4.4.1
       react-number-format: ^5.2.2
       redux: ^4.2.1
       slugid: ^3.2.0
@@ -87,6 +89,7 @@ importers:
       react-dom: 18.2.0_react@18.2.0
       react-dropzone: 14.2.3_react@18.2.0
       react-hook-form: 7.45.1_react@18.2.0
+      react-hotkeys-hook: 4.4.1_biqbaboplfbrettd7655fr4n2y
       react-number-format: 5.2.2_biqbaboplfbrettd7655fr4n2y
       redux: 4.2.1
       slugid: 3.2.0
@@ -99,6 +102,7 @@ importers:
       '@tailwindcss/container-queries': 0.1.1_tailwindcss@3.3.3
       '@tailwindcss/forms': 0.5.4_tailwindcss@3.3.3
       '@types/react': 18.2.15
+      '@types/react-command-palette': 0.18.1
       '@types/react-dom': 18.2.7
       autoprefixer: 10.4.14_postcss@8.4.26
       eslint: 8.45.0
@@ -2989,6 +2993,12 @@ packages:
 
   /@types/prop-types/15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
+
+  /@types/react-command-palette/0.18.1:
+    resolution: {integrity: sha512-KpV9cAK5LfOg50tpojyer0plGvwCHAN7WjhXdsTulJKwVej3hF8SPqmaMFK/yZUJWYjtXuSxMNdlRgWzOESTtA==}
+    dependencies:
+      '@types/react': 18.2.15
+    dev: true
 
   /@types/react-dom/18.2.7:
     resolution: {integrity: sha512-GRaAEriuT4zp9N4p1i8BDBYmEyfo+xQ3yHjJU4eiK5NDa1RmUZG+unZABUTK4/Ox/M+GaHwb6Ow8rUITrtjszA==}
@@ -8428,6 +8438,16 @@ packages:
       react: ^16.8.0 || ^17 || ^18
     dependencies:
       react: 18.2.0
+    dev: false
+
+  /react-hotkeys-hook/4.4.1_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-sClBMBioFEgFGYLTWWRKvhxcCx1DRznd+wkFHwQZspnRBkHTgruKIHptlK/U/2DPX8BhHoRGzpMVWUXMmdZlmw==}
+    peerDependencies:
+      react: '>=16.8.1'
+      react-dom: '>=16.8.1'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /react-is/16.13.1:

@@ -1,12 +1,14 @@
 import { atom, useAtom } from 'jotai';
 import { accountModalAtom, AccountModalState, Currency } from '~components/modal/account';
 import { bucketModalAtom, BucketModalState } from '~components/modal/bucket';
+import { switcherModalAtom } from '~components/modal/switcher';
 import { txnImportModalAtom } from '~components/modal/txn-import';
 
 export const useModal = () => {
   const [, setAccountModalState] = useAtom(accountModalAtom);
   const [, setBucketModalState] = useAtom(bucketModalAtom);
   const [, setTxnImportModalState] = useAtom(txnImportModalAtom);
+  const [, setSwitcherModalState] = useAtom(switcherModalAtom);
 
   return {
     newAccount: (currencies: Currency[], workspaceId: string) =>
@@ -53,6 +55,13 @@ export const useModal = () => {
               precision,
               accountId
             }
-      )
+      ),
+    openSwitcher: (workspaces: Array<{ id: string; name: string }>) =>
+      setSwitcherModalState((s) => ({
+        ...s,
+        query: '',
+        open: true,
+        workspaces
+      }))
   };
 };

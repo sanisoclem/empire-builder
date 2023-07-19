@@ -7,7 +7,9 @@ import { ROUTES, ROUTE_DEFS } from '~/routes';
 import { AuthClient, requireOnboarded } from '~api/auth';
 import { requireWorkspaceId } from '~api/policy.server';
 import { WorkspaceClient } from '~api/workspace/api';
-import { Loader, Sidebar, Topbar } from '~components';
+import { Loader } from '~components';
+import Topbar from './topbar';
+import Sidebar from './sidebar';
 import { makeRouteData, useLoaderDataStrict } from '~hooks';
 
 const loaderSchema = z.object({

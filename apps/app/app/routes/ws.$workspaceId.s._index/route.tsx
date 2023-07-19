@@ -3,9 +3,8 @@ import { z } from 'zod';
 import { requireWorkspaceId } from '~api/policy.server';
 import { WorkspaceClient } from '~api/workspace/api';
 import { Button, PageHeader } from '~components';
-import OtherAssetList from '~components/account/other-asset-list';
-import { useRouteData } from '~hooks';
-import { workspaceRouteData } from './ws.$workspaceId';
+import StockPortfolioList from './stock-portfolio-list';
+import { useLoaderDataStrict } from '~hooks';
 
 const loaderSchema = z.object({
   accounts: z.array(
@@ -29,26 +28,24 @@ export const loader = async (args: DataFunctionArgs): Promise<z.infer<typeof loa
 };
 
 export default function Accounts() {
-  const { currencies } = useRouteData(workspaceRouteData);
-  const assets = [
-    {
-      assetId: 0,
-      name: 'Honda Civic 2019',
-      assetType: 'Car',
-      costBase: 27000,
-      value: 15000,
-      currency: currencies[0].id
-    }
-  ];
-
+  const { accounts } = useLoaderDataStrict(loaderSchema);
+  const portfolios = accounts.map((a) => ({
+    tradingAccountId: 0,
+    settlementAccountId: a.id,
+    name: 'Stake',
+    settlementAccountName: a.name,
+    denomination: a.currency_id,
+    value: 31323.13,
+    costBase: 11000.1
+  }));
   return (
     <div className="w-full self-stretch bg-white dark:bg-stone-800">
       <nav className="flex h-24 items-center justify-between px-4 py-6">
-        <PageHeader>Other Assets</PageHeader>
-        <Button>New Asset</Button>
+        <PageHeader>Stock Portfolio</PageHeader>
+        <Button>New Stock Porfolio</Button>
       </nav>
       <div className="h-[calc(100vh-10rem)] w-full overflow-auto">
-        <OtherAssetList assets={assets} />
+        <StockPortfolioList portfolios={portfolios} />
       </div>
     </div>
   );
