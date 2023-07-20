@@ -19,6 +19,14 @@ export const switcherModalAtom = atom<SwitcherModalState>({
   workspaces: []
 });
 
+const commands = [
+  {
+    id: ROUTES.createWorkspace,
+    name: 'Create Workspace',
+    type: 'cmd' as const
+  }
+];
+
 function SwitcherModal() {
   const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
   const [state, setState] = useAtom(switcherModalAtom);
@@ -26,15 +34,24 @@ function SwitcherModal() {
   const navigate = useNavigate();
 
   const cmds = [
-    {
-      id: ROUTES.createWorkspace,
-      name: 'Create Workspace'
-    },
+    ...commands,
     ...state.workspaces.map((w) => ({
       id: ROUTES.workspace(w.id).dashboard,
-      name: w.name
+      name: w.name,
+      type: 'workspace' as const
     }))
   ].filter((c) => !state.query || c.name.toLowerCase().includes(state.query.toLowerCase()));
+
+  const grouped = cmds.reduce<Record<(typeof cmds)[number]['type'], Array<(typeof cmds)[number]>>>(
+    (acc, item) => ({
+      ...acc,
+      [item.type]: [item, ...acc[item.type]]
+    }),
+    {
+      cmd: [],
+      workspace: []
+    }
+  );
 
   const onChange = (cmd: (typeof cmds)[number]) => {
     setState((s) => ({
@@ -74,18 +91,26 @@ function SwitcherModal() {
           </div>
 
           <Combobox.Options className="space-y-2" static>
-            {cmds.map((cmd) => (
-              <Combobox.Option
-                key={cmd.id}
-                className={({ active }) =>
-                  ` select-none rounded-xl py-2 pl-4 pr-4 ${
-                    active ? 'bg-sky-600 text-white ' : 'text-stone-900 dark:text-stone-200'
-                  }`
-                }
-                value={cmd}
-              >
-                {({ selected, active }) => <div>{cmd.name}</div>}
-              </Combobox.Option>
+            {Object.entries(grouped).map(([k, v]) => (
+              <>
+                {v.map((cmd) => (
+                  <Combobox.Option
+                    key={cmd.id}
+                    className={({ active }) =>
+                      `select-none rounded-xl px-4 py-2 ${
+                        active ? 'bg-sky-600 text-white ' : 'text-stone-900 dark:text-stone-200'
+                      }`
+                    }
+                    value={cmd}
+                  >
+                    {({ selected, active }) => <div>{cmd.name}</div>}
+                  </Combobox.Option>
+                ))}
+                <li
+                  data-type={k}
+                  className="space-y-2 border-b border-b-stone-200 data-[type=workspace]:invisible dark:border-b-stone-700"
+                ></li>
+              </>
             ))}
           </Combobox.Options>
         </Combobox>
